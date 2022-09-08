@@ -20,6 +20,7 @@
  */
 
 App::uses('Controller', 'Controller');
+App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 
 /**
  * Application Controller
@@ -31,4 +32,29 @@ App::uses('Controller', 'Controller');
  * @link		https://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+
+    public $components = array(
+        
+        'DebugKit.Toolbar',
+        // 'Auth' => array(
+        // 'authenticate' => array(
+        //         'Form' => array(
+        //             'passwordHasher' => array(
+        //                 'className' => 'Simple',
+        //                 'hashType' => 'sha256'
+        //             )
+        //         )
+        //     )
+        // )
+    );
+
+    public function isAuthorized($user)
+    {
+        return true;
+    }
+
+    // public function beforeFilter()
+    // {
+    //     $this->Auth->allow('index','view');
+    // }
 }

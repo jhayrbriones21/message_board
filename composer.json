@@ -18,7 +18,9 @@
 		"source": "https://github.com/cakephp/cakephp"
 	},
 	"require": {
-		"php": ">=5.3.0,<8.0.0"
+		"php": ">=5.3.0,<8.0.0",
+		"cakephp/debug_kit": "^2.2.0",
+		"cakephp/authentication": "^2.0"
 	},
 	"suggest": {
 		"ext-openssl": "You need to install ext-openssl or ext-mcrypt to use AES-256 encryption",
@@ -30,7 +32,10 @@
 	},
 	"config": {
 		"vendor-dir": "vendors/",
-		"process-timeout": 0
+		"process-timeout": 0,
+		"allow-plugins": {
+			"composer/installers": true
+		}
 	},
 	"bin": [
 		"lib/Cake/Console/cake"

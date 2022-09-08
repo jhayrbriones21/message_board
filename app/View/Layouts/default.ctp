@@ -14,7 +14,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+$cakeDescription = __d('cake_dev', 'Message Board System');
 $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 ?>
 <!DOCTYPE html>
@@ -29,6 +29,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->meta('icon');
 
 		echo $this->Html->css('cake.generic');
+		// echo $this->Html->css('bootstrap.min.css');
+		echo $this->Html->script('jquery-3.6.1.min');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
@@ -38,7 +40,9 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <body>
 	<div id="container">
 		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'https://cakephp.org'); ?></h1>
+			<h1><?php echo $this->Html->link($cakeDescription, '#'); ?></h1>
+			<h1><?php echo $this->Html->link('Register', '/users/register'); ?></h1>
+			<h1><?php echo $this->Html->link('Login', '/users/login'); ?></h1>
 		</div>
 		<div id="content">
 
