@@ -30,7 +30,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
 		echo $this->Html->css('cake.generic');
 		// echo $this->Html->css('bootstrap.min.css');
-		echo $this->Html->script('jquery-3.6.1.min');
+		echo $this->Html->css('custom.css');
+		echo $this->Html->css('jquery-ui.css');
+		echo $this->Html->script('jquery-3.6.1.min.js');
+		echo $this->Html->script('jquery-ui.js');
+
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
@@ -41,8 +45,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<div id="container">
 		<div id="header">
 			<h1><?php echo $this->Html->link($cakeDescription, '#'); ?></h1>
-			<h1><?php echo $this->Html->link('Register', '/users/register'); ?></h1>
-			<h1><?php echo $this->Html->link('Login', '/users/login'); ?></h1>
 		</div>
 		<div id="content">
 

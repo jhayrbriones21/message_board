@@ -20,7 +20,6 @@
  */
 
 App::uses('Controller', 'Controller');
-App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 
 /**
  * Application Controller
@@ -34,27 +33,29 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class AppController extends Controller {
 
     public $components = array(
-        
-        'DebugKit.Toolbar',
-        // 'Auth' => array(
-        // 'authenticate' => array(
-        //         'Form' => array(
-        //             'passwordHasher' => array(
-        //                 'className' => 'Simple',
-        //                 'hashType' => 'sha256'
-        //             )
-        //         )
-        //     )
-        // )
-    );
-
-    public function isAuthorized($user)
-    {
+    'DebugKit.Toolbar',
+    'Session',
+    'Auth' => array(
+        'loginRedirect' => array('controller' => 'users', 'action' => 'profile'),
+        'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
+        'authError' => 'You must be logged in to view this page.',
+        'loginError' => 'Invalid Username or Password entered, please try again.',
+        'authenticate' => array(
+            'Form' => array(
+                'fields' => array('username' => 'email')
+            )
+        )
+ 
+    ));
+ 
+    // only allow the login controllers only
+    public function beforeFilter() {
+        $this->Auth->allow('login');
+    }
+     
+    public function isAuthorized($user) {
+        // Here is where we should verify the role and give access based on role
+         
         return true;
     }
-
-    // public function beforeFilter()
-    // {
-    //     $this->Auth->allow('index','view');
-    // }
 }
