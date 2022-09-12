@@ -13,12 +13,19 @@ class User extends AppModel {
     //     )
     // );
 
-    // public $belongsTo = array(
-    //     'Profile' => array(
-    //         'className' => 'Profile',
-    //         'foreignKey' => 'user_id'
-    //     )
-    // );
+    public $hasOne = array(
+        'Profile' => array(
+            'className' => 'Profile',
+            'foreignKey' => 'user_id'
+        )
+    );
+
+    public $hasMany = array(
+        'Message' => array(
+            'className' => 'Message',
+            'foreignKey' => 'user_id'
+        )
+    );
      
     public $validate = array(
         'name' => array(

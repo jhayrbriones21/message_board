@@ -17,10 +17,13 @@
           	<?php foreach($messages as $message): ?>  
           		<table>
           			<tr style="cursor: pointer;" class="view_message_detail" data-href='./detail/<?php echo $message['Message']['id']; ?>'>
-          				<td width="110"><img src="https://templatemo.com/templates/templatemo_551_stand_blog/assets/images/comment-author-02.jpg" alt=""></td>
+          				<td width="150">
+                      <?php echo $this->Html->image($message['User']['Profile']['profile_pic_path'] ? $message['User']['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '150px','alt'=>'profile')); ?>
+                  </td>
           				<td style="vertical-align: middle;">
           					<h3><?php echo $message['User']['name'] ?></h3>
           					<h4><?php echo $message['Message']['created'] ?></h4>
+          					<h5>Tag: <?php echo $message['Recipient']['name'] ?></h5>
           					<p><?php echo $message['Message']['description'] ?></p>
           				</td>
           			</tr>	

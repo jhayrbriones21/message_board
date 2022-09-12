@@ -11,7 +11,8 @@ class MessageController extends AppController {
     // );
     public $uses = array(
         'User',
-        'Message'
+        'Message',
+        'Profile',
     );
 
     public function beforeFilter() {
@@ -23,13 +24,10 @@ class MessageController extends AppController {
     }
  
     public function list() {
-        $messages = $this->Message->find('all',
-            array(
-            'limit' => 10,
-            'order' => 'Message.created DESC'
-       ));
 
-        // var_dump($messages);
+        $messages = $this->Message->find('all', array('recursive' => 2));
+
+        // print_r(json_encode($messages));
 
         $this->set(compact('messages'));
     }
@@ -55,7 +53,7 @@ class MessageController extends AppController {
 
         $users = $this->User->find('all',
                                 array(
-                                     'fields' => array('id as value','name as text')
+                                     'fields' => array('User.id as value','name as text')
                                   ));
 
 
@@ -65,7 +63,8 @@ class MessageController extends AppController {
     public function detail($id)
     {
         $message = $this->Message->find('first',  array(
-            'conditions' => array('Message.id' => $id)
+            'conditions' => array('Message.id' => $id),
+            'recursive' => 2
             )
         );
 

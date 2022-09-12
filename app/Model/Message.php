@@ -6,8 +6,19 @@ class Message extends AppModel {
         'User' => array(
             'className' => 'User',
             'foreignKey' => 'user_id'
+        ),
+        'Recipient' => array(
+            'className' => 'User',
+            'foreignKey' => 'recipient_id'
         )
     );
+
+    // public $belongsTo = array(
+    //     'Recipient' => array(
+    //         'className' => 'User',
+    //         'foreignKey' => 'recipient_id'
+    //     )
+    // );
 
     public $hasMany = array(
 	    'Reply'=>array(
