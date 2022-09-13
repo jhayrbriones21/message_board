@@ -6,7 +6,8 @@ class UsersController extends AppController {
 
     public $uses = array(
         'User',
-        'Profile'
+        'Profile',
+        'Security'
     );
  
     public $paginate = array(
@@ -36,11 +37,11 @@ class UsersController extends AppController {
 
                 $this->User->read('id', $this->Auth->user('id'));
                 $this->User->saveField('last_login',date('Y-m-d H-i-s'));
-                $this->Session->setFlash(__('Welcome, '. $this->Auth->user('name')));
+                $this->Flash->success(__('Welcome, '. $this->Auth->user('name')));
 
                 $this->redirect('/users/profile');
             } else {
-                $this->Session->setFlash(__('Invalid username or password'));
+                $this->Flash->error(__('Invalid username or password'));
             }
         } 
     }
@@ -57,6 +58,8 @@ class UsersController extends AppController {
         if ($this->request->is('post')) {
                  
             $this->request->data['User']['last_login'] = date('Y-m-d H-i-s');
+            $this->request->data['User']['created_ip'] = $this->request->clientIp();
+
             if ($this->User->save($this->request->data)) {
                 if($this->Auth->login())
                 {
@@ -66,7 +69,7 @@ class UsersController extends AppController {
                 }
                 
             } else {
-                $this->Session->setFlash(__('The user could not be created. Please, try again.'));
+                $this->Flash->error(__('The user could not be created. Please, try again.'));
             }   
         }
     }
@@ -104,6 +107,57 @@ class UsersController extends AppController {
             }
         }
         return json_encode(false);
+    }
+
+    public function settings()
+    {
+        $user = $this->Auth->user();
+        $this->set(compact('user'));
+
+        if($this->request->is('post')){
+
+            $current_user = $this->User->find('first', array(
+                                        'conditions'=>array('User.id'=> $this->Auth->user('id'))
+                                    )
+                                );
+
+            $email_exist = $this->User->find('all', array(
+                                    'conditions'=>array(
+                                                'User.id !='=>$this->Auth->user('id'),
+                                                'User.email'=>$this->request->data['User']['email']
+                                    )
+                                ));
+
+            $hash_new_check = Security::hash($this->request->data['User']['old_password'], 'blowfish', $current_user['User']['password']);
+
+            if($email_exist)
+            {
+                return $this->Flash->error(__('This email is already in use'));
+            }
+
+            if($hash_new_check != $current_user['User']['password'])
+            {
+                return $this->Flash->error(__('Your old password not match.'));
+            }
+
+            if($this->request->data['User']['password_update'] != $this->request->data['User']['password_confirm_update'])
+            {
+                return $this->Flash->error(__('Confim password not match.'));
+            }
+
+            $this->User->read('id', $this->Auth->user('id'));
+            $this->User->saveField('email', $this->request->data['User']['email']);
+            $this->User->saveField('password', $this->request->data['User']['password_update']);
+            $this->User->saveField('modified_ip', $this->request->clientIp());
+
+            $this->Flash->success(__('Your settings has been saved.'));
+
+            return $this->redirect('/users/settings'); 
+
+        }
+        
+
+        
     }
  
     public function edit() {
@@ -167,7 +221,7 @@ class UsersController extends AppController {
                 $this->User->read('id', $this->Auth->user('id'));
                 $this->User->saveField('name', $this->request->data['Profile']['name']);
 
-                $this->Session->setFlash(__('Your profile has been saved.'));
+                $this->Flash->success(__('Your profile has been saved.'));
                 return $this->redirect('/users/profile');
             }
         }
@@ -178,46 +232,6 @@ class UsersController extends AppController {
         );
 
         $this->set(compact('profile'));
-    }
- 
-    public function delete($id = null) {
-         
-        if (!$id) {
-            $this->Session->setFlash('Please provide a user id');
-            $this->redirect(array('action'=>'index'));
-        }
-         
-        $this->User->id = $id;
-        if (!$this->User->exists()) {
-            $this->Session->setFlash('Invalid user id provided');
-            $this->redirect(array('action'=>'index'));
-        }
-        if ($this->User->saveField('status', 0)) {
-            $this->Session->setFlash(__('User deleted'));
-            $this->redirect(array('action' => 'index'));
-        }
-        $this->Session->setFlash(__('User was not deleted'));
-        $this->redirect(array('action' => 'index'));
-    }
-     
-    public function activate($id = null) {
-         
-        if (!$id) {
-            $this->Session->setFlash('Please provide a user id');
-            $this->redirect(array('action'=>'index'));
-        }
-         
-        $this->User->id = $id;
-        if (!$this->User->exists()) {
-            $this->Session->setFlash('Invalid user id provided');
-            $this->redirect(array('action'=>'index'));
-        }
-        if ($this->User->saveField('status', 1)) {
-            $this->Session->setFlash(__('User re-activated'));
-            $this->redirect(array('action' => 'index'));
-        }
-        $this->Session->setFlash(__('User was not re-activated'));
-        $this->redirect(array('action' => 'index'));
     }
  
 }

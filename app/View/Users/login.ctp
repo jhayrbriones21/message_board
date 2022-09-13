@@ -11,4 +11,3 @@
 <?php echo $this->Form->end(__('Login')); ?>
 </div>
 
-<?php echo $this->element('Sidebar/default');?>

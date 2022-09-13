@@ -12,6 +12,9 @@ class User extends AppModel {
     //         'foreignKey'=>'user_id'
     //     )
     // );
+    public $uses = array(
+        'Security',
+    );
 
     public $hasOne = array(
         'Profile' => array(
@@ -57,7 +60,7 @@ class User extends AppModel {
             ),
              'equaltofield' => array(
                 'rule' => array('equaltofield','password'),
-                'message' => 'Confim passwords not match.'
+                'message' => 'Confim password not match.'
             )
         ),
          
@@ -76,13 +79,17 @@ class User extends AppModel {
             )
         ),
          
+        'old_password' => array(
+            'required' => array(
+                'rule' => array('notBlank'),
+                'message' => 'Old password is required'
+            )
+        ),
          
         'password_update' => array(
-            'min_length' => array(
-                'rule' => array('minLength', '6'),   
-                'message' => 'Password must have a mimimum of 6 characters',
-                'allowEmpty' => true,
-                'required' => false
+            'required' => array(
+                'rule' => array('notBlank'),
+                'message' => 'A password is required'
             )
         ),
         'password_confirm_update' => array(
@@ -147,16 +154,17 @@ class User extends AppModel {
      public function beforeSave($options = array()) {
         // hash our password
         if (isset($this->data[$this->alias]['password'])) {
-            $this->data[$this->alias]['password'] = AuthComponent::password($this->data[$this->alias]['password']);
+            $hash = Security::hash($this->data[$this->alias]['password'], 'blowfish');
+            $this->data[$this->alias]['password'] = $hash;
         }
          
         // if we get a new password, hash it
         if (isset($this->data[$this->alias]['password_update']) && !empty($this->data[$this->alias]['password_update'])) {
-            $this->data[$this->alias]['password'] = AuthComponent::password($this->data[$this->alias]['password_update']);
+            $this->data[$this->alias]['password'] = Security::hash($this->data[$this->alias]['password_update'], 'blowfish');
         }
      
         // fallback to our parent
-        return parent::beforeSave($options);
+        return true;
     }
  
 }

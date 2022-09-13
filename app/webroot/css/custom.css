@@ -49,8 +49,18 @@ body{
 
 .reply_content{
   background: #f1f2f3;
-  padding: 15px;
-  margin: 20px 5px 10px 130px;
+  border-radius: 5px;
+  margin: 15px 5px;
+}
+
+.reply_content a{
+  color: #2980b9;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.reply_content img{
+  border-radius: 5px;
 }
 
 .reply_content .reply_date{
@@ -67,7 +77,7 @@ body{
     cursor: pointer;
 }
 
-form .submit #register_btn {
+form .submit #register_btn, #edit_message_btn, #edit_cancel_message_btn, #edit_cancel_reply_btn, #edit_reply_btn{
     background: #62af56;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#76BF6B), to(#3B8230));
     background-image: -webkit-linear-gradient(top, #76BF6B, #3B8230);
@@ -88,6 +98,15 @@ input[type=submit] {
     width: auto;
 }
 
+pre{
+  font-family: 'lucida grande',verdana,helvetica,arial,sans-serif;
+  font-size: 15px;
+  color: #343333;
+  background: none;
+  box-shadow:  none;
+  padding: 0px;
+}
+
 .select2-container--default .select2-selection--single
 {
     background-color: #21262d;
@@ -97,5 +116,84 @@ input[type=submit] {
     border-bottom-color: #21262d;
     border-left-color-value: #21262d;
     height: 34px;
+}
+.banner{
+  position: relative;
+}
+.banner a{
+  position: absolute;
+  text-decoration: none;
+  top: 10px;
+}
+
+/* Navbar container */
+.navbar {
+  overflow: hidden;
+  /*background-color: #333;*/
+  font-family: Arial;
+  float: right;
+}
+
+/* Links inside the navbar */
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* The dropdown container */
+.dropdown {
+  float: right;
+  overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit; /* Important for vertical align on mobile phones */
+  margin: 0; /* Important for vertical align on mobile phones */
+}
+
+/* Add a red background color to navbar links on hover */
+/*.navbar a:hover, .dropdown:hover .dropbtn {
+  color: #c6c2c2;
+}*/
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  float: none;
+  color: #003d4c !important;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
 }
     

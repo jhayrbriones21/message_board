@@ -1,6 +1,6 @@
 <div class="users form">
     <fieldset>
-        <legend><?php echo __('Profile'); ?></legend>
+        <legend><?php echo __('View Profile'); ?></legend>
     </fieldset>
 
     <div class="page-content page-container" id="page-content">
@@ -16,9 +16,6 @@
                         <h4>Birthdate: <?php echo $profile['Profile']['birthdate'] ? date('F d, Y',strtotime($profile['Profile']['birthdate'])) : '' ?></h4>
                         <h4>Joined: <?php echo date('F d, Y ha',strtotime($profile['User']['created'])) ?></h4>
                         <h4>Last Login: <?php echo date('F d, Y ha',strtotime($profile['User']['last_login'])) ?> </h4>
-                    </td>
-                    <td>
-                        <a href="<?php echo $this->Html->url(array('controller'=>'users', 'action'=>'edit')) ?>" class="btn btn-primary pull-right">Edit Profile</a>
                     </td>
                 </tr>
                 <tr>

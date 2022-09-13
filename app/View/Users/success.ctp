@@ -9,4 +9,3 @@
     )); ?>
 </div>
 
-<?php echo $this->element('Sidebar/default');?>

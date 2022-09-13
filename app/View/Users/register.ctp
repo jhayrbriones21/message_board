@@ -13,7 +13,6 @@
 
 </div>
 
-<?php echo $this->element('Sidebar/default');?>
 
 <script type="text/javascript">
     $(document).ready(function(){

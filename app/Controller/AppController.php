@@ -35,6 +35,7 @@ class AppController extends Controller {
     public $components = array(
     'DebugKit.Toolbar',
     'Session',
+    'Flash',
     'Auth' => array(
         'loginRedirect' => array('controller' => 'users', 'action' => 'profile'),
         'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
@@ -42,7 +43,8 @@ class AppController extends Controller {
         'loginError' => 'Invalid Username or Password entered, please try again.',
         'authenticate' => array(
             'Form' => array(
-                'fields' => array('username' => 'email')
+                'fields' => array('username' => 'email'),
+                'passwordHasher' => 'Blowfish'
             )
         )
  

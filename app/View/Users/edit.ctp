@@ -20,7 +20,6 @@
 
 </div>
 
-<?php echo $this->element('Sidebar/default');?>
 <script type="text/javascript">
     $(function() {
         $("#ProfileDate").datepicker();

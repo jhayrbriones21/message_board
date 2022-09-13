@@ -14,7 +14,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-$cakeDescription = __d('cake_dev', 'Message Board System');
+$cakeDescription = __d('cake_dev', 'Message Board');
 $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 ?>
 <!DOCTYPE html>
@@ -31,6 +31,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->css('cake.generic');
 		// echo $this->Html->css('bootstrap.min.css');
 		echo $this->Html->css('custom.css');
+		echo $this->Html->css('fontawesome.css');
 		echo $this->Html->css('jquery-ui.css');
 		echo $this->Html->script('jquery-3.6.1.min.js');
 		echo $this->Html->script('jquery-ui.js');
@@ -44,7 +45,38 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 <body>
 	<div id="container">
 		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, '#'); ?></h1>
+			<div class="banner">
+				<?php echo $this->Html->link($cakeDescription, '#'); ?>
+			</div>
+			<div class="navbar">
+			  	<?php 
+			  		if(!$this->Session->check('Auth.User'))
+			  		{
+			  			echo $this->Html->link('Register', '/users/register');
+						echo $this->Html->link("Login",   '/users/login' );
+			  		}else{
+			  			echo $this->Html->link("Message List",   '/message/list' );
+			  		}
+	  			?>
+
+	  			<?php if($this->Session->check('Auth.User')){ ?>
+			  	<div class="dropdown">
+			    	<button class="dropbtn"><?php echo AuthComponent::user('email'); ?> 
+			      		<i class="fa fa-caret-down"></i>
+			    	</button>
+			    	<div class="dropdown-content">
+			    		<?php 
+			    			if($this->Session->check('Auth.User'))
+			    			{ 
+								echo $this->Html->link("Profile",   '/users/profile' );
+								echo $this->Html->link("Settings",   '/users/settings' );
+								echo $this->Html->link("Logout",   '/users/logout' );
+							}
+						?>
+			    	</div>
+			  	</div>
+				 <?php } ?>
+			</div>
 		</div>
 		<div id="content">
 

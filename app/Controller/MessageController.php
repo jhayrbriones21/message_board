@@ -1,18 +1,14 @@
 <?php 
-// app/Controller/UsersController.php
 App::uses('AppController', 'Controller');
 
 class MessageController extends AppController {
- 
-    // public $paginate = array(
-    //     'limit' => 25,
-    //     'conditions' => array('status' => '1'),
-    //     'order' => array('User.username' => 'asc' ) 
-    // );
+
     public $uses = array(
         'User',
         'Message',
         'Profile',
+        'Reply',
+        'Security'
     );
 
     public function beforeFilter() {
@@ -34,20 +30,18 @@ class MessageController extends AppController {
 
     public function add()
     {
-        //if already logged-in, redirect
         if(!$this->Session->check('Auth.User')){
             $this->redirect(array('action' => '/'));      
         }
          
         if ($this->request->is('post')) {
 
-            print_r($this->request->data);
             $this->request->data['Message']['user_id'] = $this->Auth->user('id');
             if ($this->Message->save($this->request->data)) {
-                $this->Session->setFlash(__('The message has been created'));
+                $this->Flash->success(__('The message has been created'));
                $this->redirect(array('controller'=>'message', 'action' => 'list'));
             } else {
-                $this->Session->setFlash(__('The user could not be created. Please, try again.'));
+                $this->Flash->error(__('The user could not be created. Please, try again.'));
             }  
         } 
 
@@ -64,11 +58,25 @@ class MessageController extends AppController {
     {
         $message = $this->Message->find('first',  array(
             'conditions' => array('Message.id' => $id),
-            'recursive' => 2
+            'recursive' => 3
             )
         );
 
-        $this->set(compact('message'));
+        if(!$message){
+            $this->Flash->error(__('The message was deleted!'));
+            return $this->redirect($this->referer());
+        }
+
+        $data = $this->User->find('first',array('conditions'=>array('User.id'=>$this->Auth->user('id'))));
+
+        $hash = Security::hash($data['User']['password'], 'blowfish');
+
+
+        $hash_new_check = Security::hash('12345', 'blowfish', $data['User']['password']);
+
+        $user = $this->Auth->user();
+
+        $this->set(compact('message','user'));
     }
 
     public function replyMessage()
@@ -80,8 +88,36 @@ class MessageController extends AppController {
             if ($this->Reply->save($this->request->data)) {
                 return json_encode(true);
             } else {
-                $this->Session->setFlash(__('The user could not be created. Please, try again.'));
+                $this->Flash->error(__('The user could not be created. Please, try again.'));
             }  
+        }
+    }
+
+    public function editMessage()
+    {
+        $this->response->type('application/json');  
+        $this->autoRender = false; 
+
+        if($this->request->is('post'))
+        {
+            $this->Message->read('id', $this->request->data['id']);
+            $this->Message->saveField('description', $this->request->data['edit_message']);
+
+            return json_encode($this->request->data);
+        }
+    }
+
+    public function deleteMessage()
+    {
+        $this->response->type('application/json');  
+        $this->autoRender = false; 
+
+        if($this->request->is('post'))
+        {
+            $this->Message->delete(array('Message.id' => $this->request->data['id']));
+            $this->Reply->deleteAll(array('Reply.message_id'=>$this->request->data['id']));
+
+            return json_encode($this->request->data);
         }
     }
  
