@@ -33,7 +33,7 @@ class ReplyController extends AppController {
                     <table id="reply_'.$reply['Reply']['id'] .'">
                         <tr>
                             <td width="100">
-                                <img src="/test/img/'.($reply['User']['Profile']['profile_pic_path'] ? $reply['User']['Profile']['profile_pic_path'] : '/test/img/profile/blank-profile.jpeg').'" width="100px" alt="profile">
+                                <img src="/test/img/'.($reply['User']['Profile']['profile_pic_path'] ? $reply['User']['Profile']['profile_pic_path'] : 'profile/blank-profile.jpeg').'" width="100px" alt="profile">
                             </td>
                             <td style="vertical-align: middle;">
                                 <h3><a href="/profile/view/'.$reply['User']['id'].'">'.$reply['User']['name'].'</a></h3>
