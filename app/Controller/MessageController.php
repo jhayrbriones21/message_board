@@ -13,6 +13,7 @@ class MessageController extends AppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
+        date_default_timezone_set('Asia/Manila');
         if(!$this->Session->check('Auth.User')){
             $this->redirect('/users/login');      
         }
@@ -22,8 +23,6 @@ class MessageController extends AppController {
     public function list() {
 
         $messages = $this->Message->find('all', array('recursive' => 2));
-
-        // print_r(json_encode($messages));
 
         $this->set(compact('messages'));
     }
@@ -67,14 +66,7 @@ class MessageController extends AppController {
             return $this->redirect($this->referer());
         }
 
-        $data = $this->User->find('first',array('conditions'=>array('User.id'=>$this->Auth->user('id'))));
-
-        $hash = Security::hash($data['User']['password'], 'blowfish');
-
-
-        $hash_new_check = Security::hash('12345', 'blowfish', $data['User']['password']);
-
-        $user = $this->Auth->user();
+        $user = AuthComponent::user();
 
         $this->set(compact('message','user'));
     }

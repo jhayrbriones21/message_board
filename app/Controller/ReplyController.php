@@ -4,6 +4,10 @@ App::uses('AppController', 'Controller');
 
 class ReplyController extends AppController {
 
+    public function beforeFilter() {
+        date_default_timezone_set('Asia/Manila');
+    }
+
     public function replyMessage()
     {
         $this->response->type('application/json');  
@@ -37,8 +41,9 @@ class ReplyController extends AppController {
                             </td>
                             <td style="vertical-align: middle;">
                                 <h3><a href="/profile/view/'.$reply['User']['id'].'">'.$reply['User']['name'].'</a></h3>
-                                <h4>'.$reply['Reply']['created'].'</h4>
+                                <h4>'.$this->time_elapsed_string($reply['Reply']['created']).'</h4>
                                 <pre id="reply_description_'.$reply['Reply']['id'] .'">'.$reply['Reply']['description'].'</pre>
+                                <span class="reply_edited" id="reply_edited_'.$reply['Reply']['id'].'"></span>
                                 <a href="javascript:" class="edit_message_action" data-detail=\''.json_encode($reply['Reply']).'\'>Edit</a>
                                 |
                                 <a href="">Delete</a>
@@ -68,6 +73,35 @@ class ReplyController extends AppController {
             }  
         }
     }
+
+    private function time_elapsed_string($datetime, $full = false) {
+        $now = new DateTime;
+        $ago = new DateTime($datetime);
+        $diff = $now->diff($ago);
+
+        $diff->w = floor($diff->d / 7);
+        $diff->d -= $diff->w * 7;
+
+        $string = array(
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
+        );
+        foreach ($string as $k => &$v) {
+            if ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        }
+
+        if (!$full) $string = array_slice($string, 0, 1);
+        return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
 
     public function editReply()
     {

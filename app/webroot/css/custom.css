@@ -105,6 +105,16 @@ pre{
   background: none;
   box-shadow:  none;
   padding: 0px;
+  white-space: pre-wrap;
+  padding: 10px 0;
+}
+
+.reply_edited{
+  color: gray;
+}
+
+.show-read-more .more-text{
+    display: none;
 }
 
 .select2-container--default .select2-selection--single

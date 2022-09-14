@@ -19,7 +19,7 @@
                         </td>
         				<td style="vertical-align: middle;">
         					<h3><?php echo $message['User']['name'] ?></h3>
-        					<h4><?php echo $message['Message']['created'] ?></h4>
+        					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
         					<pre id="message_description_<?php echo $message['Message']['id'] ?>"><?php echo $message['Message']['description'] ?></pre>
                             <mark><?php echo $message['Recipient']['name'] ?></mark>
                             <p></p>
@@ -81,9 +81,9 @@
                                     </td>
                                     <td style="vertical-align: middle;">
                                         <h3><?php echo $this->Html->link($reply['User']['name'],   '/profile/view/'.$reply['User']['id'] ); ?></h3>
-                                        <h4><?php echo $reply['created']; ?></h4>
+                                        <h4><?php echo time_elapsed_string($reply['created']) ?></h4>
                                         <pre id="reply_description_<?php echo $reply['id'] ?>"><?php echo $reply['description']; ?></pre>
-
+                                        <span class="reply_edited" id="reply_edited_<?php echo $reply['id'] ?>"><?php echo $reply['created'] != $reply['modified'] ? '(edited)<br><br>' : '' ?></span>
                                         <?php if(AuthComponent::user('id') == $reply['User']['id']) { ?>
                                         <a href="javascript:" class="edit_message_action" data-detail='<?php echo json_encode($reply) ?>'>Edit</a>
                                         |
@@ -114,23 +114,75 @@
                         </div>
         	    	<?php endforeach ?>
 
-                    <a href="javascript:showMore(10)" id="show_more_data">Show more</a>
                 </div>
+                <a href="javascript:showMore(10)" id="show_more_data">Show more</a>
             </div>
         </div>
     </div>
 </div>
+<?php
+function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
 
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+?>
 
 <script type="text/javascript">
-
+    var load_count = 0;
     $(document).ready(function(){
         $('.reply_content').hide();
+        setTimeout(function(){
+            $('#ReplyReplyMessage').focus();
+        },50);
 
         setTimeout(function(){
             showMore(10);
         },100)
+
+
     });
+
+    // function showMore(number){
+
+    //     var count = 1;
+    //     $('.reply_content').each(function(){
+
+    //         if(!$(this).is(':visible'))
+    //         {
+    //             if(count <= number)
+    //             {
+    //                 $(this).show();
+    //             }
+
+    //             count++;
+    //         }
+    //     });
+    //     countReply();
+    // }
 
     function showMore(number){
 
@@ -147,6 +199,16 @@
                 count++;
             }
         });
+
+        load_count += number;
+
+        if(load_count >= $('.reply_content').length)
+        {
+            $('#show_more_data').hide();
+        }else{
+            $('#show_more_data').show();
+        }
+
     }
 
 
@@ -260,6 +322,7 @@
                 console.log(data);
 
                 $('#reply_description_'+data.id).text(data.Reply.edit_reply);
+                $('#reply_edited_'+data.id).html('(edited)<br><br>');
                 $('#edit_reply_form_'+data.id).hide();
                 $('#reply_'+data.id).show();
             },
@@ -311,6 +374,7 @@
 
                     $('.content_'+data.id).remove();
                     countReply();
+
                 },
                 error: function(data, textStatus, jqXHR) {
                    console.log(data);
@@ -322,6 +386,23 @@
     function countReply()
     {
         $('#count_reply').text($('.reply_content').length > 1 ? $('.reply_content').length+' Replies' : $('.reply_content').length+' Reply');
+
+        if($('.reply_content').length > 10)
+        {
+            $('#show_more_data').show();
+        }else{
+            $('#show_more_data').hide();
+        }
+
+        setTimeout(function(){
+            $('.reply_content').each(function(){
+                if(!$(this).is(':visible'))
+                {
+                    $('#show_more_data').show();
+                }
+            })
+        })
+        
     }
 </script>
 
