@@ -74,7 +74,8 @@ class ReplyController extends AppController {
         }
     }
 
-    private function time_elapsed_string($datetime, $full = false) {
+    private function time_elapsed_string($datetime, $full = false) 
+    {
         $now = new DateTime;
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
@@ -101,7 +102,7 @@ class ReplyController extends AppController {
 
         if (!$full) $string = array_slice($string, 0, 1);
         return $string ? implode(', ', $string) . ' ago' : 'just now';
-}
+    }
 
     public function editReply()
     {

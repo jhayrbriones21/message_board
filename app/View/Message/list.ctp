@@ -31,7 +31,7 @@
           					<h3><?php echo $message['User']['name'] ?></h3>
           					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
           					<mark><?php echo $message['Recipient']['name'] ?></mark>
-          					<pre class="show-read-more"><?php echo $message['Message']['description'] ?></pre>
+          					<pre class="show-read-more"><?php echo htmlspecialchars($message['Message']['description']) ?></pre>
           					<p><?php echo count($message['Reply']) ? count($message['Reply']) > 1 ? count($message['Reply']).' Replies' : count($message['Reply']).' Reply' : '0 Reply' ?> <a href="./detail/<?php echo $message['Message']['id']; ?>">add reply</p>
           				</td>
           			</tr>	

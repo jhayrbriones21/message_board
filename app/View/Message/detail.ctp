@@ -82,7 +82,7 @@
                                     <td style="vertical-align: middle;">
                                         <h3><?php echo $this->Html->link($reply['User']['name'],   '/profile/view/'.$reply['User']['id'] ); ?></h3>
                                         <h4><?php echo time_elapsed_string($reply['created']) ?></h4>
-                                        <pre id="reply_description_<?php echo $reply['id'] ?>"><?php echo $reply['description']; ?></pre>
+                                        <pre id="reply_description_<?php echo $reply['id'] ?>"><?php echo htmlspecialchars($reply['description']) ?></pre>
                                         <span class="reply_edited" id="reply_edited_<?php echo $reply['id'] ?>"><?php echo $reply['created'] != $reply['modified'] ? '(edited)<br><br>' : '' ?></span>
                                         <?php if(AuthComponent::user('id') == $reply['User']['id']) { ?>
                                         <a href="javascript:" class="edit_message_action" data-detail='<?php echo htmlspecialchars(json_encode($reply), ENT_QUOTES,'UTF-8') ?>'>Edit</a>
@@ -93,10 +93,11 @@
                                 </tr>
                             </table>
 
-                            <?php if(AuthComponent::user('id') == $reply['User']['id']) { ?>
+                            <?php if(AuthComponent::user('id') == $reply['User']['id']): ?>
                             <table id="edit_reply_form_<?php echo $reply['id'] ?>" style="display: none;">
                                 <tr>
                                     <td>
+                                        <form></form>
                                         <form id="edit_form_<?php echo $reply['id'] ?>">
                                             <fieldset>
                                                 <?php echo $this->Form->input('edit_reply',array('type'=>'textarea','id'=>'edit_reply_message_'.$reply['id'],'rows'=>2, 'value'=>$reply['description'])) ?>
@@ -110,7 +111,7 @@
                                     </td>
                                 </tr>
                             </table>
-                            <?php } ?>
+                            <?php endif ?>
                         </div>
         	    	<?php endforeach ?>
 
@@ -153,6 +154,22 @@ function time_elapsed_string($datetime, $full = false) {
 
 <script type="text/javascript">
     var load_count = 0;
+
+    jQuery.fn.extend({
+        autoHeight: function () {
+            function autoHeight_(element) {
+            return jQuery(element)
+                .css({ "height": 0, "overflow-y": "hidden" })
+                .height(element.scrollHeight);
+            }
+            return this.each(function() {
+            autoHeight_(this).on("input", function() {
+                autoHeight_(this);
+            });
+            });
+        }
+    });
+
     $(document).ready(function(){
         $('.reply_content').hide();
         setTimeout(function(){
@@ -163,26 +180,8 @@ function time_elapsed_string($datetime, $full = false) {
             showMore(10);
         },100)
 
-
+        $("textarea").autoHeight();
     });
-
-    // function showMore(number){
-
-    //     var count = 1;
-    //     $('.reply_content').each(function(){
-
-    //         if(!$(this).is(':visible'))
-    //         {
-    //             if(count <= number)
-    //             {
-    //                 $(this).show();
-    //             }
-
-    //             count++;
-    //         }
-    //     });
-    //     countReply();
-    // }
 
     function showMore(number){
 
@@ -210,8 +209,6 @@ function time_elapsed_string($datetime, $full = false) {
         }
 
     }
-
-
 
     $('#ReplyReplyMessage').keyup(function(){
         if($(this).val())
@@ -249,9 +246,9 @@ function time_elapsed_string($datetime, $full = false) {
     $('.message_edit_action').click(function(){
         var detail = $(this).data('detail');
 
-        console.log(detail);
         $('#edit_message_form_'+detail.id).show();
         $('#message_'+detail.id).hide();
+        $('#edit_message_message_'+detail.id).focus().trigger('input');
     });
 
     $('.edit_cancel_message_btn').click(function(){
@@ -261,13 +258,15 @@ function time_elapsed_string($datetime, $full = false) {
         $('#message_'+id).show();
     });
 
-
-
     $('.reply_container').on('click','.edit_message_action',function(){
         var detail = $(this).data('detail');
 
         $('#edit_reply_form_'+detail.id).show();
         $('#reply_'+detail.id).hide();
+
+        $("textarea").autoHeight();
+        $('#edit_reply_message_'+detail.id).focus().trigger('input');
+
     });
 
     $('.reply_container').on('click','.edit_cancel_reply_btn',function(){
