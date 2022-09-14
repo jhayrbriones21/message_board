@@ -12,6 +12,7 @@
                     </td>
                     <td>
                         <h3><?php echo $profile['User']['name'] ?></h3>
+                        <h4>Email: <?php echo $profile['User']['email'] ?></h4>
                         <h4>Gender: <?php echo $profile['Profile']['gender'] == 0 ? 'Male' : 'Female' ?></h4>
                         <h4>Birthdate: <?php echo $profile['Profile']['birthdate'] ? date('F d, Y',strtotime($profile['Profile']['birthdate'])) : '' ?></h4>
                         <h4>Joined: <?php echo date('F d, Y ha',strtotime($profile['User']['created'])) ?></h4>
@@ -21,7 +22,7 @@
                 <tr>
                     <td colspan="3">
                         <h3>Hubby</h3>
-                        <p><?php echo $profile['Profile']['hubby'] ?></p>
+                        <pre><?php echo $profile['Profile']['hubby'] ?></pre>
                     </td>
                 </tr>
             </table>

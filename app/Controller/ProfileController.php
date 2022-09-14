@@ -10,6 +10,13 @@ class ProfileController extends AppController {
                                 'conditions'=>array('User.id'=>$id)
         ));
 
+        if(!$profile){
+            $this->Flash->error(__('Page not found!'));
+
+            return $this->redirect($this->referer());
+        }
+
+
         $this->set(compact('profile'));
     }
  

@@ -221,6 +221,11 @@ class UsersController extends AppController {
                 $this->User->read('id', $this->Auth->user('id'));
                 $this->User->saveField('name', $this->request->data['Profile']['name']);
 
+                $user = $this->User->find('first',  array(
+                    'conditions' => array('User.id' => $this->Auth->user('id'))
+                    )
+                );
+
                 $this->Flash->success(__('Your profile has been saved.'));
                 return $this->redirect('/users/profile');
             }

@@ -23,16 +23,16 @@
         					<pre id="message_description_<?php echo $message['Message']['id'] ?>"><?php echo $message['Message']['description'] ?></pre>
                             <mark><?php echo $message['Recipient']['name'] ?></mark>
                             <p></p>
-                            <?php if(AuthComponent::user('id') == $message['User']['id']) { ?>
+                            <?php if(AuthComponent::user('id') == $message['User']['id']): ?>
                             <a href="javascript:" class="message_edit_action" data-detail='<?php echo htmlspecialchars(json_encode($message['Message']), ENT_QUOTES,'UTF-8')?>'>Edit</a>
                             |
                             <a href="javascript:deleteMessage(<?php echo $message['Message']['id'] ?>)">Delete</a>
-                            <?php } ?>
+                            <?php endif ?>
         				</td>
         			</tr>
         		</table>
 
-                <?php if(AuthComponent::user('id') == $message['User']['id']) { ?>
+                <?php if(AuthComponent::user('id') == $message['User']['id']): ?>
                 <table id="edit_message_form_<?php echo $message['Message']['id'] ?>" style="display: none;">
                     <tr>
                         <td>
@@ -49,7 +49,7 @@
                         </td>
                     </tr>
                 </table>
-                <?php } ?>
+                <?php endif ?>
 
                 <hr>
                 <table>
@@ -84,11 +84,11 @@
                                         <h4><?php echo time_elapsed_string($reply['created']) ?></h4>
                                         <pre id="reply_description_<?php echo $reply['id'] ?>"><?php echo htmlspecialchars($reply['description']) ?></pre>
                                         <span class="reply_edited" id="reply_edited_<?php echo $reply['id'] ?>"><?php echo $reply['created'] != $reply['modified'] ? '(edited)<br><br>' : '' ?></span>
-                                        <?php if(AuthComponent::user('id') == $reply['User']['id']) { ?>
+                                        <?php if(AuthComponent::user('id') == $reply['User']['id']): ?>
                                         <a href="javascript:" class="edit_message_action" data-detail='<?php echo htmlspecialchars(json_encode($reply), ENT_QUOTES,'UTF-8') ?>'>Edit</a>
                                         |
                                         <a href="javascript:deleteReply(<?php echo $reply['id'] ?>)">Delete</a>
-                                        <?php } ?>
+                                        <?php endif ?>
                                     </td>
                                 </tr>
                             </table>

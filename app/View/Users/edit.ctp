@@ -3,7 +3,6 @@
     <fieldset>
         <legend><?php echo __('Edit Profile'); ?></legend>
         <?php echo $this->Html->image($profile['Profile']['profile_pic_path'] ? $profile['Profile']['profile_pic_path'] : 'profile/blank-profile.jpeg', array('width' => '200px','alt'=>'profile','id'=>'preview')); ?>
-
         <?php echo $this->Form->file('picture',['type'=>'file','accept'=>'image/*','onchange'=>"document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])"]) ?>
         <?php echo $this->Form->input('name',array('value'=>$profile['User']['name'])); ?>
         <?php echo $this->Form->input('date',array('value'=>$profile['Profile']['birthdate'], 'label'=>'Birthdate')); ?>
@@ -17,10 +16,28 @@
         <?php echo $this->Form->input('hubby',array('value'=>$profile['Profile']['hubby'],'type'=>'textarea')); ?>
         <?php echo $this->Form->end(__('Update')); ?>
     </fieldset>
-
 </div>
 
 <script type="text/javascript">
+    $(document).ready(function(){
+        $("textarea").autoHeight();
+    });
+
+    jQuery.fn.extend({
+        autoHeight: function () {
+            function autoHeight_(element) {
+            return jQuery(element)
+                .css({ "height": 0, "overflow-y": "hidden" })
+                .height(element.scrollHeight);
+            }
+            return this.each(function() {
+            autoHeight_(this).on("input", function() {
+                autoHeight_(this);
+            });
+            });
+        }
+    });
+
     $(function() {
         $("#ProfileDate").datepicker();
     });

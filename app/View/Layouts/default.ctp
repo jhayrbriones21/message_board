@@ -28,13 +28,17 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<?php
 		echo $this->Html->meta('icon');
 
+		// css
 		echo $this->Html->css('cake.generic');
-		// echo $this->Html->css('bootstrap.min.css');
 		echo $this->Html->css('custom.css');
 		echo $this->Html->css('fontawesome.css');
 		echo $this->Html->css('jquery-ui.css');
+		echo $this->Html->css('select2.min.css');
+
+		//scripts
 		echo $this->Html->script('jquery-3.6.1.min.js');
 		echo $this->Html->script('jquery-ui.js');
+		echo $this->Html->script('select2.min.js');
 
 
 		echo $this->fetch('meta');
@@ -50,32 +54,28 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</div>
 			<div class="navbar">
 			  	<?php 
-			  		if(!$this->Session->check('Auth.User'))
-			  		{
+			  		if(!$this->Session->check('Auth.User')):
 			  			echo $this->Html->link('Register', '/users/register');
 						echo $this->Html->link("Login",   '/users/login' );
-			  		}else{
+					else:
 			  			echo $this->Html->link("Message List",   '/message/list' );
-			  		}
+			  		endif
 	  			?>
 
-	  			<?php if($this->Session->check('Auth.User')){ ?>
+	  			<?php if($this->Session->check('Auth.User')): ?>
 			  	<div class="dropdown">
 			    	<button class="dropbtn"><?php echo AuthComponent::user('email'); ?> 
 			      		<i class="fa fa-caret-down"></i>
 			    	</button>
 			    	<div class="dropdown-content">
 			    		<?php 
-			    			if($this->Session->check('Auth.User'))
-			    			{ 
-								echo $this->Html->link("Profile",   '/users/profile' );
-								echo $this->Html->link("Settings",   '/users/settings' );
-								echo $this->Html->link("Logout",   '/users/logout' );
-							}
+							echo $this->Html->link("Profile",   '/users/profile' );
+							echo $this->Html->link("Settings",   '/users/settings' );
+							echo $this->Html->link("Logout",   '/users/logout' );
 						?>
 			    	</div>
 			  	</div>
-				 <?php } ?>
+				 <?php endif ?>
 			</div>
 		</div>
 		<div id="content">

@@ -1,5 +1,4 @@
 <?php 
-// app/Controller/UsersController.php
 App::uses('AppController', 'Controller');
 
 class ReplyController extends AppController {
@@ -23,15 +22,6 @@ class ReplyController extends AppController {
                     'conditions'=>array('Reply.id'=>$this->Reply->id)
                     ,'recursive'=>2
                 ));
-
-                // $data = '<table class="reply_content"><tr>
-                //     <td width="150"><img src="/test/img/'.($reply['User']['Profile']['profile_pic_path'] ? $reply['User']['Profile']['profile_pic_path'] : '/test/img/profile/blank-profile.jpeg').'" width="150px" alt="profile"></td>
-                //     <td style="vertical-align: middle;">
-                //         <h3>'.$reply['User']['name'].'</h3>
-                //         <h4>'.$reply['Reply']['created'].'</h4>
-                //         <pre>'.$reply['Reply']['description'].'</pre>
-                //     </td>
-                // </tr></table>';
 
                 $data = '<div class="reply_content content_'.$reply['Reply']['id'].'">
                     <table id="reply_'.$reply['Reply']['id'] .'">

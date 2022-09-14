@@ -43,6 +43,7 @@
     </div>
 </div>
 
+
 <?php
 function time_elapsed_string($datetime, $full = false) {
     $now = new DateTime;
@@ -73,7 +74,6 @@ function time_elapsed_string($datetime, $full = false) {
     return $string ? implode(', ', $string) . ' ago' : 'just now';
 }
 ?>
-
 
 <script type="text/javascript">
 

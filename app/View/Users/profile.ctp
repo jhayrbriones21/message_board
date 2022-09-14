@@ -24,7 +24,7 @@
                 <tr>
                     <td colspan="3">
                         <h3>Hubby</h3>
-                        <p><?php echo $profile['Profile']['hubby'] ?></p>
+                        <pre><?php echo htmlspecialchars($profile['Profile']['hubby'])?></pre>
                     </td>
                 </tr>
             </table>

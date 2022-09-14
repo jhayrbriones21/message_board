@@ -1,7 +1,6 @@
 <div class="users form">
 <?php echo $this->Session->flash('auth'); ?>
 <?php echo $this->Form->create('User'); ?>
-
     <fieldset>
         <legend><?php echo __('Login'); ?></legend>
         <?php echo $this->Form->input('email');

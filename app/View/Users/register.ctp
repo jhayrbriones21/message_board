@@ -10,19 +10,17 @@
             <?php echo $this->Form->button('Register', array('type'=>'button', 'id'=>'register_btn' ,'class'=>'submit')); ?>
         </div>
     </fieldset>
-
 </div>
-
 
 <script type="text/javascript">
     $(document).ready(function(){
         $('#UserName,#UserEmail,#UserPassword,#UserPasswordConfirm').removeAttr('required');
-    })
+    });
+
     var timer_email;
     var email_log;
     var timer_submit;
     $('#UserEmail').keydown(function(){
-
         if(email_log != $(this).val())
         {
             clearTimeout(timer_email);
@@ -113,44 +111,6 @@
             $("form").submit();
         }
     })
-
-    // $("form").on("submit", function(event){
-    //         // event.preventDefault();
-    //     var $form = $(this);
-
-    //     if ($form.data('blocked') !== true) {
-
-    //         // mark the form as blocked
-    //         $form.data('blocked', true);
-    //         console.log('Scheduling form submit...');
-
-           
-
-    //         alert();
-
-    //         timer_submit = window.setTimeout(function() {
-    //             console.log('Submitting!');
-    //             $form.submit();
-    //             $form.data('blocked', false);
-    //         }, 1000);
-
-    //         if($('.error-message').length){
-    //             clearTimeout(timer_submit);
-    //             alert();
-    //             event.preventDefault();
-    //         }
-
-    //         return false
-
-    //     }
-
-    //     var form_data = new FormData($(this)[0]);
-
-        
-
-        
-
-    // });
 
     function checkEmailExist(email)
     {
