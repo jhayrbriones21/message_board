@@ -13,7 +13,8 @@
 			    )); ?>
 		</legend>
 		<div>
-			<?php echo $this->Form->input('search_message',array('label'=>'Search Messages','oninput'=>'liveSearch()')) ?>
+			<!-- <?php echo $this->Form->input('search_message',array('label'=>'Search Messages','oninput'=>'liveSearch()')) ?> -->
+			<?php echo $this->Form->input('search',array('label'=>'Search Messages','id'=>'search')) ?>
 			
 		</div>
 	</fieldset>
@@ -22,7 +23,7 @@
       <div class="sidebar-item comments">
         <div class="content">
           	<?php foreach($messages as $message): ?>  
-          		<table>
+          		<table id="message_table_<?php echo $message['Message']['id'] ?>">
           			<tr style="cursor: pointer;" class="view_message_detail" data-href='./detail/<?php echo $message['Message']['id']; ?>'>
           				<td width="150">
 	                      	<?php echo $this->Html->image($message['User']['Profile']['profile_pic_path'] ? $message['User']['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '150px','alt'=>'profile')); ?>
@@ -129,6 +130,23 @@ function time_elapsed_string($datetime, $full = false) {
 
     }
 
+	function loadCounted()
+	{
+		var count = 1;
+        $('table').each(function(){
+
+            if(!$(this).is(':visible'))
+            {
+                if(count <= load_count)
+                {
+                    $(this).show();
+                }
+
+                count++;
+            }
+        });
+	}
+
     function liveSearch() {
 
     	if($('#search_message').val())
@@ -163,5 +181,29 @@ function time_elapsed_string($datetime, $full = false) {
 		}
 
 	}
+
+	$('#search').keyup(function(){
+		$.ajax({
+			url: '<?php echo $this->Html->url(array('controller'=>'message', 'action'=>'searchMessage')) ?>',
+			type: 'get',
+			data: {
+				search: $(this).val()
+			}
+		}).done(function(data){
+			$('table').hide();
+			$.map(data,function(message){
+				$('#message_table_'+message.Message.id).show();
+			});
+
+			console.log(load_count);
+		});
+
+		if(!$(this).val())
+		{
+			$('table').hide();
+			loadCounted(load_count);
+		}
+	});
+
 </script>
 

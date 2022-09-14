@@ -20,8 +20,8 @@
         				<td style="vertical-align: middle;">
         					<h3><?php echo $message['User']['name'] ?></h3>
         					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
-        					<pre id="message_description_<?php echo $message['Message']['id'] ?>"><?php echo $message['Message']['description'] ?></pre>
                             <mark><?php echo $message['Recipient']['name'] ?></mark>
+        					<pre id="message_description_<?php echo $message['Message']['id'] ?>"><?php echo $message['Message']['description'] ?></pre>
                             <p></p>
                             <?php if(AuthComponent::user('id') == $message['User']['id']): ?>
                             <a href="javascript:" class="message_edit_action" data-detail='<?php echo htmlspecialchars(json_encode($message['Message']), ENT_QUOTES,'UTF-8')?>'>Edit</a>

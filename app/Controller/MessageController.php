@@ -112,5 +112,21 @@ class MessageController extends AppController {
             return json_encode($this->request->data);
         }
     }
+
+    public function searchMessage()
+    {
+        $this->response->type('application/json');  
+        $this->autoRender = false;
+
+        $search = $this->request->query['search'];
+
+        $conditions = array('OR'=>array("Message.description LIKE '%$search%'","User.name LIKE '%$search%'","Recipient.name LIKE '%$search%'"));
+
+        $searched_messages = $this->Message->find('all',array('conditions'=>$conditions));
+
+        // $this->set(compact('searched_messages'));
+
+        return json_encode($searched_messages);
+    }
  
 }
