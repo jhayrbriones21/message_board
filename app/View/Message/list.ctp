@@ -26,14 +26,14 @@
           		<table id="message_table_<?php echo $message['Message']['id'] ?>">
           			<tr style="cursor: pointer;" class="view_message_detail" data-href='./detail/<?php echo $message['Message']['id']; ?>'>
           				<td width="150">
-	                      	<?php echo $this->Html->image($message['User']['Profile']['profile_pic_path'] ? $message['User']['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '150px','alt'=>'profile')); ?>
+	                      	<?php echo $this->Html->image($message['Profile']['profile_pic_path'] ? $message['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '150px','alt'=>'profile')); ?>
                   		</td>
           				<td style="vertical-align: middle;">
           					<h3><?php echo $message['User']['name'] ?></h3>
           					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
           					<mark><?php echo $message['Recipient']['name'] ?></mark>
           					<pre class="show-read-more"><?php echo htmlspecialchars($message['Message']['description']) ?></pre>
-          					<p><?php echo count($message['Reply']) ? count($message['Reply']) > 1 ? count($message['Reply']).' Replies' : count($message['Reply']).' Reply' : '0 Reply' ?> <a href="./detail/<?php echo $message['Message']['id']; ?>">add reply</p>
+          					<p><?php echo $message['Reply']['count'] > 1 ? $message['Reply']['count'].' Replies' : $message['Reply']['count'].' Reply' ?> <a href="./detail/<?php echo $message['Message']['id']; ?>">add reply</p>
           				</td>
           			</tr>	
           		</table>
@@ -79,6 +79,7 @@ function time_elapsed_string($datetime, $full = false) {
 <script type="text/javascript">
 
 	var load_count = 0;
+	var timer_search;
 
     $(document).ready(function(){
         $('table').hide();
@@ -183,6 +184,7 @@ function time_elapsed_string($datetime, $full = false) {
 	}
 
 	$('#search').keyup(function(){
+
 		$.ajax({
 			url: '<?php echo $this->Html->url(array('controller'=>'message', 'action'=>'searchMessage')) ?>',
 			type: 'get',
@@ -195,13 +197,14 @@ function time_elapsed_string($datetime, $full = false) {
 				$('#message_table_'+message.Message.id).show();
 			});
 
-			console.log(load_count);
+			$('#show_more_data').hide();
 		});
 
 		if(!$(this).val())
 		{
 			$('table').hide();
 			loadCounted(load_count);
+			$('#show_more_data').show();
 		}
 	});
 

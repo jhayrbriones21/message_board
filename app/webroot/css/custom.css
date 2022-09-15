@@ -206,4 +206,8 @@ pre{
 .dropdown:hover .dropdown-content {
   display: block;
 }
+
+pre{
+  color: white;
+}
     

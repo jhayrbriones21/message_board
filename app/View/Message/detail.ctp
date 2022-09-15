@@ -15,7 +15,7 @@
         		<table id="message_<?php echo $message['Message']['id'] ?>">
         			<tr>
         				<td width="100">
-                              <?php echo $this->Html->image($message['User']['Profile']['profile_pic_path'] ? $message['User']['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '100px','alt'=>'profile')); ?>
+                              <?php echo $this->Html->image($message['Profile']['profile_pic_path'] ? $message['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '100px','alt'=>'profile')); ?>
                         </td>
         				<td style="vertical-align: middle;">
         					<h3><?php echo $message['User']['name'] ?></h3>
@@ -73,38 +73,38 @@
                 <h3 id="count_reply"><?php echo count($message['Reply']) ? count($message['Reply']) > 1 ? count($message['Reply']).' Replies' : count($message['Reply']).' Reply' : '0 Reply'; ?></h3>
                 <div class="reply_container">
             		<?php foreach($message['Reply'] as $reply): ?>
-                        <div class="reply_content content_<?php echo $reply['id'] ?>">
-                            <table id="reply_<?php echo $reply['id'] ?>">
+                        <div class="reply_content content_<?php echo $reply['Reply']['id'] ?>">
+                            <table id="reply_<?php echo $reply['Reply']['id'] ?>">
                                 <tr>
                                     <td width="100">
-                                        <?php echo $this->Html->image($reply['User']['Profile']['profile_pic_path'] ? $reply['User']['Profile']['profile_pic_path'] : 'profile/blank-profile.jpeg', array('width' => '100px','alt'=>'profile')); ?>
+                                        <?php echo $this->Html->image($reply['Profile']['profile_pic_path'] ? $reply['Profile']['profile_pic_path'] : 'profile/blank-profile.jpeg', array('width' => '100px','alt'=>'profile')); ?>
                                     </td>
                                     <td style="vertical-align: middle;">
                                         <h3><?php echo $this->Html->link($reply['User']['name'],   '/profile/view/'.$reply['User']['id'] ); ?></h3>
-                                        <h4><?php echo time_elapsed_string($reply['created']) ?></h4>
-                                        <pre id="reply_description_<?php echo $reply['id'] ?>"><?php echo htmlspecialchars($reply['description']) ?></pre>
-                                        <span class="reply_edited" id="reply_edited_<?php echo $reply['id'] ?>"><?php echo $reply['created'] != $reply['modified'] ? '(edited)<br><br>' : '' ?></span>
+                                        <h4><?php echo time_elapsed_string($reply['Reply']['created']) ?></h4>
+                                        <pre id="reply_description_<?php echo $reply['Reply']['id'] ?>"><?php echo htmlspecialchars($reply['Reply']['description']) ?></pre>
+                                        <span class="reply_edited" id="reply_edited_<?php echo $reply['Reply']['id'] ?>"><?php echo $reply['Reply']['created'] != $reply['Reply']['modified'] ? '(edited)<br><br>' : '' ?></span>
                                         <?php if(AuthComponent::user('id') == $reply['User']['id']): ?>
-                                        <a href="javascript:" class="edit_message_action" data-detail='<?php echo htmlspecialchars(json_encode($reply), ENT_QUOTES,'UTF-8') ?>'>Edit</a>
+                                        <a href="javascript:" class="edit_message_action" data-detail='<?php echo htmlspecialchars(json_encode($reply['Reply']), ENT_QUOTES,'UTF-8') ?>'>Edit</a>
                                         |
-                                        <a href="javascript:deleteReply(<?php echo $reply['id'] ?>)">Delete</a>
+                                        <a href="javascript:deleteReply(<?php echo $reply['Reply']['id'] ?>)">Delete</a>
                                         <?php endif ?>
                                     </td>
                                 </tr>
                             </table>
 
                             <?php if(AuthComponent::user('id') == $reply['User']['id']): ?>
-                            <table id="edit_reply_form_<?php echo $reply['id'] ?>" style="display: none;">
+                            <table id="edit_reply_form_<?php echo $reply['Reply']['id'] ?>" style="display: none;">
                                 <tr>
                                     <td>
                                         <form></form>
-                                        <form id="edit_form_<?php echo $reply['id'] ?>">
+                                        <form id="edit_form_<?php echo $reply['Reply']['id'] ?>">
                                             <fieldset>
-                                                <?php echo $this->Form->input('edit_reply',array('type'=>'textarea','id'=>'edit_reply_message_'.$reply['id'],'rows'=>2, 'value'=>$reply['description'])) ?>
+                                                <?php echo $this->Form->input('edit_reply',array('type'=>'textarea','id'=>'edit_reply_message_'.$reply['Reply']['id'],'rows'=>2, 'value'=>$reply['Reply']['description'])) ?>
                                                 <div class="submit">
-                                                    <?php echo $this->Form->button('Edit Reply', array('type'=>'button', 'id'=>'edit_reply_btn' ,'class'=>'submit edit_reply_btn', 'data-id'=>$reply['id'])); ?>
+                                                    <?php echo $this->Form->button('Edit Reply', array('type'=>'button', 'id'=>'edit_reply_btn' ,'class'=>'submit edit_reply_btn', 'data-id'=>$reply['Reply']['id'])); ?>
 
-                                                    <?php echo $this->Form->button('Cancel', array('type'=>'button', 'id'=>'edit_cancel_reply_btn', 'class'=>'edit_cancel_reply_btn', 'data-id'=>$reply['id'])); ?>
+                                                    <?php echo $this->Form->button('Cancel', array('type'=>'button', 'id'=>'edit_cancel_reply_btn', 'class'=>'edit_cancel_reply_btn', 'data-id'=>$reply['Reply']['id'])); ?>
                                                 </div>
                                             </fieldset>
                                         </form>

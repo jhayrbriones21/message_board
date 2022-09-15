@@ -3,33 +3,6 @@ App::uses('AuthComponent', 'Controller/Component');
  
 class User extends AppModel {
      
-    // public $avatarUploadDir = 'img/avatars';
-    // public $hasOne = 'Profile';
-
-    // public $hasOne = array(
-    //     'Reply'=>array(
-    //         'className'=>'Reply',
-    //         'foreignKey'=>'user_id'
-    //     )
-    // );
-    public $uses = array(
-        'Security',
-    );
-
-    public $hasOne = array(
-        'Profile' => array(
-            'className' => 'Profile',
-            'foreignKey' => 'user_id'
-        )
-    );
-
-    public $hasMany = array(
-        'Message' => array(
-            'className' => 'Message',
-            'foreignKey' => 'user_id'
-        )
-    );
-     
     public $validate = array(
         'name' => array(
             'nonEmpty' => array(
@@ -166,5 +139,4 @@ class User extends AppModel {
         // fallback to our parent
         return true;
     }
- 
 }
