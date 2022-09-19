@@ -21,7 +21,7 @@
         					<h3><?php echo $message['User']['name'] ?></h3>
         					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
                             <mark><?php echo $message['Recipient']['name'] ?></mark>
-        					<pre id="message_description_<?php echo $message['Message']['id'] ?>"><?php echo $message['Message']['description'] ?></pre>
+        					<pre id="message_description_<?php echo $message['Message']['id'] ?>" class="show-read-more"><?php echo $message['Message']['description'] ?></pre>
                             <p></p>
                             <?php if(AuthComponent::user('id') == $message['User']['id']): ?>
                             <a href="javascript:" class="message_edit_action" data-detail='<?php echo htmlspecialchars(json_encode($message['Message']), ENT_QUOTES,'UTF-8')?>'>Edit</a>
@@ -82,7 +82,7 @@
                                     <td style="vertical-align: middle;">
                                         <h3><?php echo $this->Html->link($reply['User']['name'],   '/profile/view/'.$reply['User']['id'] ); ?></h3>
                                         <h4><?php echo time_elapsed_string($reply['Reply']['created']) ?></h4>
-                                        <pre id="reply_description_<?php echo $reply['Reply']['id'] ?>"><?php echo htmlspecialchars($reply['Reply']['description']) ?></pre>
+                                        <pre id="reply_description_<?php echo $reply['Reply']['id'] ?>" class="show-read-more"><?php echo htmlspecialchars($reply['Reply']['description']) ?></pre>
                                         <span class="reply_edited" id="reply_edited_<?php echo $reply['Reply']['id'] ?>"><?php echo $reply['Reply']['created'] != $reply['Reply']['modified'] ? '(edited)<br><br>' : '' ?></span>
                                         <?php if(AuthComponent::user('id') == $reply['User']['id']): ?>
                                         <a href="javascript:" class="edit_message_action" data-detail='<?php echo htmlspecialchars(json_encode($reply['Reply']), ENT_QUOTES,'UTF-8') ?>'>Edit</a>
@@ -152,6 +152,14 @@ function time_elapsed_string($datetime, $full = false) {
 }
 ?>
 
+<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect('http://localhost:3000');
+    socket.on('reply', data => {
+        $('.reply_container').append(data.reply);
+    });
+</script>
+
 <script type="text/javascript">
     var load_count = 0;
 
@@ -179,6 +187,22 @@ function time_elapsed_string($datetime, $full = false) {
         setTimeout(function(){
             showMore(10);
         },100)
+
+        var maxLength = 300;
+		$(".show-read-more").each(function(){
+			var myStr = $(this).text();
+			if($.trim(myStr).length > maxLength){
+				var newStr = myStr.substring(0, maxLength);
+				var removedStr = myStr.substring(maxLength, $.trim(myStr).length);
+				$(this).empty().html(newStr);
+				$(this).append(' <a href="javascript:void(0);" class="read-more">read more...</a>');
+				$(this).append('<span class="more-text">' + removedStr + '</span>');
+			}
+		});
+		$(".read-more").click(function(){
+			$(this).siblings(".more-text").contents().unwrap();
+			$(this).remove();
+		});
 
         $("textarea").autoHeight();
     });
@@ -218,6 +242,7 @@ function time_elapsed_string($datetime, $full = false) {
             $('#reply_btn').attr('disabled','disabled');
         }
     })
+
     $("form").on("submit", function(event){
         event.preventDefault();
         var form_data = new FormData($(this)[0]);
@@ -231,10 +256,12 @@ function time_elapsed_string($datetime, $full = false) {
             // dataType: "json",
             success: function(data, textStatus, jqXHR) {
                // location.assign("success");
-               $('.reply_container').append(data);
+               
                $('#ReplyReplyMessage').val('');
 
                countReply();
+               $("textarea").autoHeight();
+               socket.emit('reply', {reply:data});
             },
             error: function(data, textStatus, jqXHR) {
                //process error msg

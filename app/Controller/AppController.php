@@ -60,4 +60,11 @@ class AppController extends Controller {
          
         return true;
     }
+
+    function afterFilter() {
+        if ($this->response->statusCode() == '404')
+        {
+            throw new NotFoundException();
+        }
+    }
 }

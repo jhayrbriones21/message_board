@@ -9,8 +9,7 @@ class UsersController extends AppController
         'User',
         'Profile',
         'Security',
-        'Session',
-        'MessageController',
+        'Session'
     ];
 
     public $paginate = [
@@ -79,7 +78,6 @@ class UsersController extends AppController
 
     public function success()
     {
-        
     }
 
     public function profile()
@@ -188,6 +186,42 @@ class UsersController extends AppController
                 ]
             );
 
+            if (!$this->User->read(null, $this->Auth->user('id'))) {
+                $this->Flash->error(__('Oop! Something went wrong.'));
+
+                return $this->redirect('/users/edit');
+            }
+
+            // $user['User']['name'] = $this->request->data['Profile']['name']
+            $this->User->save(array(
+                        'User' => array(
+                            'name' => $this->request->data['Profile']['name'],
+                            'modified_ip' => $this->request->clientIp(),
+                        )
+                    )
+                );
+            // $this->User->read(null, $this->Auth->user('id'));
+            // $this->User->saveField('name', $this->request->data['Profile']['name']);
+            // $this->loadModel('User');
+            // $this->User->set(
+            //     array(
+            //         'name' => $this->request->data['Profile']['name'],
+            //         'modified_ip' => $this->request->clientIp()
+            //     )
+            // );
+
+            // $this->User->data['User']['name'] = 'dd';
+            // $this->User->read(null, $this->Auth->user('id'));
+            // $this->User->save($this->User->data);
+            pr($this->User->save());
+
+            $set_data = array(
+                'name' => $this->request->data['Profile']['name'],
+                'modified_ip' => $this->request->clientIp()
+            );
+
+            // pr($this->User->save($this->User->data));
+
             if (isset($this->request->data['Profile']['picture']) && isset($this->request->data['Profile']['picture']['name'])) {
                 if ($this->request->data['Profile']['picture']['name'] && $this->request->data['Profile']['picture']['type']) {
                     $exp = [];
@@ -213,7 +247,6 @@ class UsersController extends AppController
                 }
             }
 
-            $this->request->data['Profile']['user_id'] = $this->Auth->user('id');
             $this->request->data['Profile']['birthdate'] = date('Y-m-d', strtotime($this->request->data['Profile']['date']));
 
             if (!$profile) {
@@ -231,22 +264,12 @@ class UsersController extends AppController
                     return $this->redirect('/users/edit');
                 }
 
-                if (!$this->User->read(null, $this->Auth->user('id'))) {
-                    $this->Flash->error(__('Oop! Something went wrong.'));
-
-                    return $this->redirect('/users/edit');
-                }
+                
 
                 // $this->User->read(null, $this->Auth->user('id'));
                 // pr($this->User->read(null, $this->Auth->user('id')));
                 // pr($this->User->saveField('name', $this->request->data['Profile']['name']));
-                $this->User->save([
-                            'User' => [
-                                'name' => 'qwerty',
-                                'modified_ip' => $this->request->clientIp(),
-                        ],
-                    ]
-                );
+                
 
                 // pr($this->User->read(null, $this->Auth->user('id')));
 

@@ -24,6 +24,11 @@ class MessageController extends AppController
 
     public function list()
     {
+        $this->Message->virtualFields = array(
+			'count' => "SELECT `COUNT(*)` FROM `replies` AS `Reply` 
+						WHERE `Reply`.`message_id` = `Message`.`id`"
+		);
+
         $messages = $this->Message->find('all',array(
                     'joins'=> array(
                         array(
@@ -53,14 +58,10 @@ class MessageController extends AppController
                         'Profile.profile_pic_path',
                         'User.name',
                         'Recipient.name',
+                        'Message.count'
                     )
                 )
             );
-
-            foreach($messages as $key=>$message)
-            {
-                $messages[$key]['Reply']['count'] = count($this->Reply->find('all',array('conditions'=>array('Reply.message_id'=>$message['Message']['id']))));
-            }
 
         $this->set(compact('messages'));
     }
@@ -126,6 +127,11 @@ class MessageController extends AppController
             )
         );
 
+        if(empty($message))
+        {
+            throw new NotFoundException('Could not find that message');
+        }
+
         $message['Reply'] = $this->Reply->find('all',array(
                                 'joins' => array(
                                     array(
@@ -153,6 +159,8 @@ class MessageController extends AppController
                                     'User.id'
                                 )
                             ));
+
+                           
 
         if (!$message) {
             $this->Flash->error(__('The message was deleted!'));

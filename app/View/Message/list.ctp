@@ -33,7 +33,7 @@
           					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
           					<mark><?php echo $message['Recipient']['name'] ?></mark>
           					<pre class="show-read-more"><?php echo htmlspecialchars($message['Message']['description']) ?></pre>
-          					<p><?php echo $message['Reply']['count'] > 1 ? $message['Reply']['count'].' Replies' : $message['Reply']['count'].' Reply' ?> <a href="./detail/<?php echo $message['Message']['id']; ?>">add reply</p>
+          					<p><?php echo $message['Message']['count'] > 1 ? $message['Message']['count'].' Replies' : $message['Message']['count'].' Reply' ?> <a href="./detail/<?php echo $message['Message']['id']; ?>">add reply</p>
           				</td>
           			</tr>	
           		</table>
@@ -86,21 +86,21 @@ function time_elapsed_string($datetime, $full = false) {
 
         showMore(10);
 
-         var maxLength = 300;
-		    $(".show-read-more").each(function(){
-		        var myStr = $(this).text();
-		        if($.trim(myStr).length > maxLength){
-		            var newStr = myStr.substring(0, maxLength);
-		            var removedStr = myStr.substring(maxLength, $.trim(myStr).length);
-		            $(this).empty().html(newStr);
-		            $(this).append(' <a href="javascript:void(0);" class="read-more">read more...</a>');
-		            $(this).append('<span class="more-text">' + removedStr + '</span>');
-		        }
-		    });
-		    $(".read-more").click(function(){
-		        $(this).siblings(".more-text").contents().unwrap();
-		        $(this).remove();
-		    });
+        var maxLength = 300;
+		$(".show-read-more").each(function(){
+			var myStr = $(this).text();
+			if($.trim(myStr).length > maxLength){
+				var newStr = myStr.substring(0, maxLength);
+				var removedStr = myStr.substring(maxLength, $.trim(myStr).length);
+				$(this).empty().html(newStr);
+				$(this).append(' <a href="javascript:void(0);" class="read-more">read more...</a>');
+				$(this).append('<span class="more-text">' + removedStr + '</span>');
+			}
+		});
+		$(".read-more").click(function(){
+			$(this).siblings(".more-text").contents().unwrap();
+			$(this).remove();
+		});
 
     });
 
@@ -209,4 +209,5 @@ function time_elapsed_string($datetime, $full = false) {
 	});
 
 </script>
+
 
