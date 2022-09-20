@@ -118,6 +118,7 @@ class MessageController extends AppController
                     'Message.user_id',
                     'Message.description',
                     'Message.created',
+                    'Message.modified',
                     'Profile.profile_pic_path',
                     'User.name',
                     'User.id',
@@ -129,7 +130,9 @@ class MessageController extends AppController
 
         if(empty($message))
         {
-            throw new NotFoundException('Could not find that message');
+            $this->Flash->error(__('The message was deleted!'));
+            return $this->redirect('/message/list');
+            
         }
 
         $message['Reply'] = $this->Reply->find('all',array(
@@ -221,7 +224,24 @@ class MessageController extends AppController
 
         $conditions = ['OR' => ["Message.description LIKE '%$search%'", "User.name LIKE '%$search%'", "Recipient.name LIKE '%$search%'"]];
 
-        $searched_messages = $this->Message->find('all', ['conditions' => $conditions]);
+        $searched_messages = $this->Message->find('all', array(
+            'joins' => array(
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'INNER',
+                    'conditions' => array('User.id = Message.user_id')
+                ),
+                array(
+                    'table' => 'users',
+                    'alias' => 'Recipient',
+                    'type' => 'INNER',
+                    'conditions' => array('Recipient.id = Message.user_id')
+                )
+            ),
+            'conditions' => $conditions
+            )
+        );
 
         return json_encode($searched_messages);
     }

@@ -13,7 +13,6 @@
 			    )); ?>
 		</legend>
 		<div>
-			<!-- <?php echo $this->Form->input('search_message',array('label'=>'Search Messages','oninput'=>'liveSearch()')) ?> -->
 			<?php echo $this->Form->input('search',array('label'=>'Search Messages','id'=>'search')) ?>
 			
 		</div>
@@ -24,7 +23,7 @@
         <div class="content">
           	<?php foreach($messages as $message): ?>  
           		<table id="message_table_<?php echo $message['Message']['id'] ?>">
-          			<tr style="cursor: pointer;" class="view_message_detail" data-href='./detail/<?php echo $message['Message']['id']; ?>'>
+          			<tr class="view_message_detail" data-href='./detail/<?php echo $message['Message']['id']; ?>'>
           				<td width="150">
 	                      	<?php echo $this->Html->image($message['Profile']['profile_pic_path'] ? $message['Profile']['profile_pic_path']  : 'profile/blank-profile.jpeg', array('width' => '150px','alt'=>'profile')); ?>
                   		</td>
@@ -43,7 +42,6 @@
       </div>
     </div>
 </div>
-
 
 <?php
 function time_elapsed_string($datetime, $full = false) {
@@ -92,11 +90,13 @@ function time_elapsed_string($datetime, $full = false) {
 			if($.trim(myStr).length > maxLength){
 				var newStr = myStr.substring(0, maxLength);
 				var removedStr = myStr.substring(maxLength, $.trim(myStr).length);
+				console.log(removedStr);
 				$(this).empty().html(newStr);
 				$(this).append(' <a href="javascript:void(0);" class="read-more">read more...</a>');
 				$(this).append('<span class="more-text">' + removedStr + '</span>');
 			}
 		});
+
 		$(".read-more").click(function(){
 			$(this).siblings(".more-text").contents().unwrap();
 			$(this).remove();
@@ -207,7 +207,6 @@ function time_elapsed_string($datetime, $full = false) {
 			$('#show_more_data').show();
 		}
 	});
-
 </script>
 
 

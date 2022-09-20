@@ -188,39 +188,16 @@ class UsersController extends AppController
 
             if (!$this->User->read(null, $this->Auth->user('id'))) {
                 $this->Flash->error(__('Oop! Something went wrong.'));
-
                 return $this->redirect('/users/edit');
             }
+            $this->User->saveField('modified_ip', $this->request->clientIp());
+            $this->User->set('name',$this->request->data['Profile']['name']);
+            $this->User->save();
 
-            // $user['User']['name'] = $this->request->data['Profile']['name']
-            $this->User->save(array(
-                        'User' => array(
-                            'name' => $this->request->data['Profile']['name'],
-                            'modified_ip' => $this->request->clientIp(),
-                        )
-                    )
-                );
-            // $this->User->read(null, $this->Auth->user('id'));
-            // $this->User->saveField('name', $this->request->data['Profile']['name']);
-            // $this->loadModel('User');
-            // $this->User->set(
-            //     array(
-            //         'name' => $this->request->data['Profile']['name'],
-            //         'modified_ip' => $this->request->clientIp()
-            //     )
-            // );
-
-            // $this->User->data['User']['name'] = 'dd';
-            // $this->User->read(null, $this->Auth->user('id'));
-            // $this->User->save($this->User->data);
-            pr($this->User->save());
-
-            $set_data = array(
-                'name' => $this->request->data['Profile']['name'],
-                'modified_ip' => $this->request->clientIp()
-            );
-
-            // pr($this->User->save($this->User->data));
+            if($this->User->save())
+            {
+                $this->Session->write('Auth.User.name', $this->request->data['Profile']['name']);
+            }
 
             if (isset($this->request->data['Profile']['picture']) && isset($this->request->data['Profile']['picture']['name'])) {
                 if ($this->request->data['Profile']['picture']['name'] && $this->request->data['Profile']['picture']['type']) {
@@ -236,8 +213,6 @@ class UsersController extends AppController
                     $target = $target.basename($image);
 
                     if (move_uploaded_file($tmp, $target)) {
-                        echo 'Successfully moved';
-
                         $this->request->data['Profile']['profile_pic_path'] = 'profile/'.$this->request->data['Profile']['picture']['name'];
                     } else {
                         echo 'Error';
@@ -264,22 +239,7 @@ class UsersController extends AppController
                     return $this->redirect('/users/edit');
                 }
 
-                
-
-                // $this->User->read(null, $this->Auth->user('id'));
-                // pr($this->User->read(null, $this->Auth->user('id')));
-                // pr($this->User->saveField('name', $this->request->data['Profile']['name']));
-                
-
-                // pr($this->User->read(null, $this->Auth->user('id')));
-
-                // $user = $this->User->find('first',  array(
-                //     'conditions' => array('User.id' => $this->Auth->user('id'))
-                //     )
-                // );
-
                 $this->Flash->success(__('Your profile has been saved.'));
-                // return $this->redirect('/users/profile');
             }
         }
 

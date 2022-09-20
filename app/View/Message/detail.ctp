@@ -22,7 +22,7 @@
         					<h4><?php echo time_elapsed_string($message['Message']['created']) ?></h4>
                             <mark><?php echo $message['Recipient']['name'] ?></mark>
         					<pre id="message_description_<?php echo $message['Message']['id'] ?>" class="show-read-more"><?php echo $message['Message']['description'] ?></pre>
-                            <p></p>
+                            <p style="color: gray;" id="message_edited_status"><?php echo $message['Message']['created'] != $message['Message']['modified'] ? '(edited)' : '' ?></p>
                             <?php if(AuthComponent::user('id') == $message['User']['id']): ?>
                             <a href="javascript:" class="message_edit_action" data-detail='<?php echo htmlspecialchars(json_encode($message['Message']), ENT_QUOTES,'UTF-8')?>'>Edit</a>
                             |
@@ -152,31 +152,10 @@ function time_elapsed_string($datetime, $full = false) {
 }
 ?>
 
-<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script src="http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000/socket.io/socket.io.js"></script>
 <script>
-	var socket = io.connect('http://localhost:3000');
-    socket.on('reply', data => {
-        $('.reply_container').append(data.reply);
-    });
-</script>
-
-<script type="text/javascript">
-    var load_count = 0;
-
-    jQuery.fn.extend({
-        autoHeight: function () {
-            function autoHeight_(element) {
-            return jQuery(element)
-                .css({ "height": 0, "overflow-y": "hidden" })
-                .height(element.scrollHeight);
-            }
-            return this.each(function() {
-            autoHeight_(this).on("input", function() {
-                autoHeight_(this);
-            });
-            });
-        }
-    });
+	var socket = io.connect('http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000'); // connect to socket.io server
+    var room = <?php echo json_encode(hash('sha1',$message['Message']['id'])) ?>
 
     $(document).ready(function(){
         $('.reply_content').hide();
@@ -205,6 +184,61 @@ function time_elapsed_string($datetime, $full = false) {
 		});
 
         $("textarea").autoHeight();
+
+        socket.emit('join-room',room); // join room when they page is ready
+    });
+
+    // execute message edited
+    socket.on('receive_message_edited', data => {
+        $('#message_description_'+data.id).text(data.edit_message);
+        $('#edit_message_form_'+data.id).hide();
+        $('#message_'+data.id).show();
+        $('#message_edited_status').text('(edited)');
+    });
+
+    // execute deleted message
+    socket.on('receive_message_deleted', data => {
+        location.reload();
+    });
+
+    // execute add reply
+    socket.on('receive_reply', data => {
+        $('.reply_container').append(appendReplyTemplate(data));
+        countReply();
+        $("textarea").autoHeight();
+    });
+
+    // execute edited reply
+    socket.on('receive_reply_edited', data => {
+        $('#reply_description_'+data.Reply.id).text(data.Reply.description);
+        $('#reply_edited_'+data.Reply.id).html('(edited)<br><br>');
+        $('#edit_reply_form_'+data.Reply.id).hide();
+        $('#reply_'+data.Reply.id).show();
+    })
+
+    // execute deleted reply
+    socket.on('receive_reply_deleted', data => {
+        $('.content_'+data.Reply.id).remove(); // remove from list
+        countReply(); // update count replied
+    })
+</script>
+
+<script type="text/javascript">
+    var load_count = 0;
+
+    jQuery.fn.extend({
+        autoHeight: function () {
+            function autoHeight_(element) {
+            return jQuery(element)
+                .css({ "height": 0, "overflow-y": "hidden" })
+                .height(element.scrollHeight);
+            }
+            return this.each(function() {
+            autoHeight_(this).on("input", function() {
+                autoHeight_(this);
+            });
+            });
+        }
     });
 
     function showMore(number){
@@ -253,18 +287,11 @@ function time_elapsed_string($datetime, $full = false) {
             data: form_data,
             processData: false,
             contentType: false,
-            // dataType: "json",
             success: function(data, textStatus, jqXHR) {
-               // location.assign("success");
-               
                $('#ReplyReplyMessage').val('');
-
-               countReply();
-               $("textarea").autoHeight();
-               socket.emit('reply', {reply:data});
+               socket.emit('send-reply', data,room);
             },
             error: function(data, textStatus, jqXHR) {
-               //process error msg
                console.log(data);
             },
         })
@@ -318,11 +345,7 @@ function time_elapsed_string($datetime, $full = false) {
             contentType: false,
             processData: false,
             success: function(data, textStatus, jqXHR) {
-                console.log(data);
-
-                $('#message_description_'+data.id).text(data.edit_message);
-                $('#edit_message_form_'+data.id).hide();
-                $('#message_'+data.id).show();
+                socket.emit('send-message-edited',data,room);
             },
             error: function(data, textStatus, jqXHR) {
                console.log(data);
@@ -345,12 +368,7 @@ function time_elapsed_string($datetime, $full = false) {
             contentType: false,
             processData: false,
             success: function(data, textStatus, jqXHR) {
-                console.log(data);
-
-                $('#reply_description_'+data.id).text(data.Reply.edit_reply);
-                $('#reply_edited_'+data.id).html('(edited)<br><br>');
-                $('#edit_reply_form_'+data.id).hide();
-                $('#reply_'+data.id).show();
+                socket.emit('send-reply-edited',data,room); // send reply edited to server
             },
             error: function(data, textStatus, jqXHR) {
                console.log(data);
@@ -372,8 +390,7 @@ function time_elapsed_string($datetime, $full = false) {
                 },
                 dataType: "json",
                 success: function(data, textStatus, jqXHR) {
-                    alert('Deleted successfully!');
-                    location.assign('<?php echo $this->Html->url(array('controller'=>'message', 'action'=>'list')) ?>');
+                    socket.emit('send-message-deleted',data,room); // send to server that the message was deleted
                 },
                 error: function(data, textStatus, jqXHR) {
                    console.log(data);
@@ -396,11 +413,7 @@ function time_elapsed_string($datetime, $full = false) {
                 },
                 dataType: "json",
                 success: function(data, textStatus, jqXHR) {
-                    console.log(data);
-
-                    $('.content_'+data.id).remove();
-                    countReply();
-
+                    socket.emit('send-reply-deleted',data,room); // send reply deleted to server
                 },
                 error: function(data, textStatus, jqXHR) {
                    console.log(data);
@@ -429,6 +442,50 @@ function time_elapsed_string($datetime, $full = false) {
             })
         })
         
+    }
+
+    function appendReplyTemplate(data)
+    {
+        var reply_template = `<div class="reply_content content_${data.Reply.id}">
+                    <table id="reply_${data.Reply.id}">
+                        <tr>
+                            <td width="100">
+                                <img src="/test/img/${(data.Profile.profile_pic_path ? data.Profile.profile_pic_path : 'profile/blank-profile.jpeg')}" width="100px" alt="profile">
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <h3><a href="/profile/view/${data.User.id}">${data.User.name}</a></h3>
+                                <h4>${data.Reply.created}</h4>
+                                <pre id="reply_description_${data.Reply.id}">${data.Reply.description}</pre>
+                                <span class="reply_edited" id="reply_edited_${data.Reply.id}"></span>`;
+
+                                if(data.User.id == <?php echo AuthComponent::user('id') ?>)
+                                {
+                                    reply_template += `<a href="javascript:" class="edit_message_action" data-detail=\'${JSON.stringify(data.Reply)}\'>Edit</a>
+                                                        |
+                                                        <a href="">Delete</a>`;
+                                }
+                                reply_template += `</td>
+                        </tr>
+                    </table>`;
+
+                    if(data.User.id == <?php echo AuthComponent::user('id') ?>){
+                        reply_template += `<table id="edit_reply_form_${data.Reply.id}" style="display: none;">
+                                            <tr>
+                                                <td>
+                                                    <form id="edit_form_${data.Reply.id}">
+                                                        <fieldset><textarea name="data[Reply][edit_reply]" id="edit_reply_message_${data.Reply.id}" rows="2">${data.Reply.description}</textarea>
+                                                            <div class="submit">
+                                                            <button type="button" id="edit_reply_btn" class="submit edit_reply_btn" data-id="${data.Reply.id}">Edit Reply</button>
+                                                            <button type="button" id="edit_cancel_reply_btn" class="edit_cancel_reply_btn" data-id="${data.Reply.id}">Cancel</button>
+                                                            </div>
+                                                        </fieldset>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>`;
+                    }
+        return reply_template;
     }
 </script>
 
