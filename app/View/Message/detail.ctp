@@ -2,7 +2,38 @@
     table tr td{
         border-bottom: none;
     }
+    ul
+    {
+        list-style-type: none;
+    }
+
+    div ul li
+    {
+        margin: 5px;
+    }    
+
+    img
+    {
+        vertical-align: middle; /* | top | bottom */
+    }
+    div ul li p
+    {
+        display: inline-block;
+        vertical-align: middle; /* | top | bottom */
+        margin: 10px;
+    }
+    #list_user_connected img{
+        border-radius: 10px;
+    }
 </style>
+<div style="position:relative;">
+    <div style="position:absolute;">
+    <h4>Connected to this room</h4>
+        <ul id="list_user_connected">
+
+        </ul>
+    </div>
+</div>
 <div class="users form">
 	<fieldset>
 		<legend><?php echo __('Message Detail'); ?></legend>
@@ -154,8 +185,11 @@ function time_elapsed_string($datetime, $full = false) {
 
 <script src="http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000/socket.io/socket.io.js"></script>
 <script>
+    
 	var socket = io.connect('http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000'); // connect to socket.io server
-    var room = <?php echo json_encode(hash('sha1',$message['Message']['id'])) ?>
+    var room = <?php echo json_encode(hash('sha1',$message['Message']['id'])) ?>;
+    var user = <?php echo json_encode(AuthComponent::user()) ?>;
+    user.profile_pic_path = <?php echo json_encode($user['Profile']['profile_pic_path']) ?>
 
     $(document).ready(function(){
         $('.reply_content').hide();
@@ -185,7 +219,18 @@ function time_elapsed_string($datetime, $full = false) {
 
         $("textarea").autoHeight();
 
-        socket.emit('join-room',room); // join room when they page is ready
+        socket.emit('join-room',room,user); // join room when they page is ready
+    });
+
+    socket.on('users_connected_to_this_room', data => {
+        var user_list = '';
+        $.map(data,function(user){
+            console.log(user);
+            // user_list += `<li>${user.name}</li>`;
+            user_list += `<li><a href="<?php echo $this->Html->url(array('controller'=>'message', 'action'=>'messagePrivate/${user.id}'))?>"><img src="/test/img/${(user.profile_pic_path ? user.profile_pic_path : 'profile/blank-profile.jpeg')}" width="20px" alt="profile"><p>${user.name}</p></a></li>`;
+        });
+
+        $('#list_user_connected').html(user_list);
     });
 
     // execute message edited

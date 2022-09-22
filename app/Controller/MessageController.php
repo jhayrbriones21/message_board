@@ -245,4 +245,144 @@ class MessageController extends AppController
 
         return json_encode($searched_messages);
     }
+
+    public function messagePrivate($id)
+    {
+        $user = $this->Profile->find('first',array(
+            'joins' => array(
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'INNER',
+                    'conditions' => 'Profile.user_id = User.id'
+                )
+            ),
+            'fields' => array(
+                'User.id',
+                'User.name',
+                'User.email',
+                'Profile.profile_pic_path'
+            ),
+            'conditions'=>array('Profile.user_id'=>$id)
+        ));
+
+        $private_messages = $this->Message->find('all',array(
+            'conditions' => array(
+                'Message.user_id IN' => array($id,$this->Auth->user('id')),
+                'Message.recipient_id IN' => array($id,$this->Auth->user('id')),
+                'Message.is_private' => 1
+            ),
+            'order' => 'Message.created'
+        ));
+
+        $ids = array($id,$this->Auth->user('id'));
+        uasort($ids, function($a, $b){
+            if($a == $b)
+                return 1;
+            else
+                return $b - $a;
+        });
+
+        $room = hash('sha1','private'.implode(":",$ids));
+
+        $this->set(compact('user','private_messages','room'));
+    }
+
+    public function sendPrivateMessage()
+    {
+        $this->response->type('application/json');
+        $this->autoRender = false;
+
+        if($this->request->is('post'))
+        {
+            $this->Message->create();
+            $this->Message->set(array(
+                'recipient_id' => $this->request->data['recipient_id'],
+                'description' => $this->request->data['description'],
+                'user_id' => $this->Auth->user('id'),
+                'is_private' => 1
+            ));
+            
+            if($this->Message->save())
+            {
+                return json_encode($this->Message->find('first',array(
+                    'conditions' => array('Message.id'=>$this->Message->id)
+                )));
+            }
+        }
+    }
+
+    public function getUserLatestRecordMessage()
+    {
+        $this->response->type('application/json');
+        $this->autoRender = false;
+
+        $this->User->virtualFields = array(
+			'message_id' => "SELECT `id` FROM `messages` AS `Message` 
+						WHERE `Message.recipient_id` = `User.id` OR `Message.user_id`=`User.id` AND `Message.is_private` = 1 ORDER BY `Message.id DESC` LIMIT 1"
+		);
+
+        $usersss = $this->User->find('all',array(
+            array(
+                'SELECT `id` FROM `messages` AS `Message` WHERE `Message.id` = `User.message_id` LIMIT 1'
+            ),
+            // 'joins' => array(
+                
+            // ),
+            'fields' => array(
+                'User.id',
+                'User.message_id',
+                'Message.id',
+            ),
+            // 'conditions' => array('Message.id = User.message_id'),
+            'order' => 'User.message_id DESC'
+        ));
+
+        pr($usersss);
+
+        $this->Message->virtualFields = array(
+			'message_id' => "SELECT `id` FROM `messages` AS `Message` 
+						WHERE `Message.recipient_id` = `User.id` OR `Message.user_id`=`User.id` AND `Message.is_private` = 1 ORDER BY `Message.id DESC` LIMIT 1"
+		);
+
+        $user_list = $this->Message->find('all',array(
+            'joins' => array(
+                array(
+                    'table' => 'messages',
+                    'alias' => 'CurrentMessage',
+                    'type' => 'LEFT',
+                    'conditions' => array('CurrentMessage.id = Message.message_id')
+                ),
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'RIGHT',
+                    'conditions' => array('Message.user_id = User.id OR Message.recipient_id = User.id')
+                ),
+                array(
+                    'table' => 'profiles',
+                    'alias' => 'Profile',
+                    'type' => 'INNER',
+                    'conditions' => array('User.id = Profile.user_id')
+                ),
+            ),
+            'fields' => array(
+                'User.id',
+                'User.name',
+                'User.email',
+                'Message.message_id',
+                'Profile.profile_pic_path',
+                'Message.created',
+                'Message.description',
+                'Message.id'
+            ),
+            'conditions' => array(
+                'OR' => array('Message.user_id' => $this->Auth->user('id'),'Message.recipient_id' => $this->Auth->user('id'))
+            ),
+            'group' => 'User.id',
+            'order' => 'Message.message_id DESC'
+        ));
+
+        return json_encode($user_list);
+    }
 }

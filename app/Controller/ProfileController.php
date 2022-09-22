@@ -23,7 +23,8 @@ class ProfileController extends AppController {
                                 'User.name',
                                 'User.email',
                                 'User.created',
-                                'User.last_login'
+                                'User.last_login',
+                                'User.id'
                             ),
                             'conditions' => array('User.id' => $id)
                         )

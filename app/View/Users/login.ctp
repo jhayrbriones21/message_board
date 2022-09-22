@@ -3,10 +3,9 @@
 <?php echo $this->Form->create('User'); ?>
     <fieldset>
         <legend><?php echo __('Login'); ?></legend>
-        <?php echo $this->Form->input('email');
-        echo $this->Form->input('password');
-    ?>
+        <?php echo $this->Form->input('email'); ?>
+        <?php echo $this->Form->input('password'); ?>
+    <?php echo $this->Form->end(__('Login')); ?>
     </fieldset>
-<?php echo $this->Form->end(__('Login')); ?>
 </div>
 

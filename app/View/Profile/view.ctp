@@ -25,6 +25,9 @@
                         <pre><?php echo $profile['Profile']['hubby'] ?></pre>
                     </td>
                 </tr>
+                <tr>
+                    <td><a href="<?php echo $this->Html->url(array('controller'=>'message', 'action'=>'messagePrivate/'.$profile['User']['id'])) ?>" class="btn btn-primary pull-right">Send Private Message</a></td>
+                </tr>
             </table>
         </div>
     </div>

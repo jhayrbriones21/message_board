@@ -61,7 +61,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			  			echo $this->Html->link("Message List",   '/message/list' );
 			  		endif
 	  			?>
-
+				<!-- <a href="#">Logged ID: <?php echo AuthComponent::user('id'); ?> </a> -->
 	  			<?php if($this->Session->check('Auth.User')): ?>
 			  	<div class="dropdown">
 			    	<button class="dropbtn"><?php echo AuthComponent::user('email'); ?> 
