@@ -24,37 +24,31 @@ cron.schedule('*/1 * * * *', () => {
       shellJs.cd('/Applications/XAMPP/htdocs/test');
       const repo = 'message_board';
 
-      const userName = 'jhayrbriones21';
-      const password = 'iowdlac12';
-
-      const gitHubUrl = `https://${userName}:${password}@github.com/${userName}/${repo}`;
-      simpleGit.addConfig('user.email','fdc.jhayr@gmail.com');
-      simpleGit.addConfig('user.name','Jhayr Briones');
-
-      // simpleGitPromise.addRemote('origin',gitHubUrl);
-	// Add all files for commit
-	  simpleGitPromise.add('.')
-	    .then(
-	       (addSuccess) => {
-	          console.log(addSuccess);
-	       }, (failedAdd) => {
-	          console.log('adding files failed');
-	    });
-	// Commit files as Initial Commit
-	 simpleGitPromise.commit(`DB backup ${fileName}`)
-	   .then(
-	      (successCommit) => {
-	        console.log(successCommit);
-	     }, (failed) => {
-	        console.log('failed commmit');
-	 });
-	// Finally push to online repository
-	 simpleGitPromise.push('origin','master')
-	    .then((success) => {
-	       console.log('repo successfully pushed');
-	    },(failed)=> {
-	       console.log('repo push failed');
-	 });
+		// Add all files for commit
+		simpleGitPromise.add(`${fileName}`)
+		    .then(
+		       (addSuccess) => {
+		          console.log(addSuccess);
+		       }, (failedAdd) => {
+		       	console.log(failedAdd);
+		          console.log('adding files failed');
+		});
+		// Commit files as Initial Commit
+		simpleGitPromise.commit(`DB backup`)
+		   .then(
+		      (successCommit) => {
+		        console.log(successCommit);
+		     }, (failed) => {
+		     	console.log(failed);
+		        console.log('failed commmit');
+		});
+		// Finally push to online repository
+		simpleGitPromise.push('origin','master')
+		    .then((success) => {
+		       console.log('repo successfully pushed');
+		    },(failed)=> {
+		       console.log('repo push failed');
+		});
 
     })
     .on('error', (err) => {
