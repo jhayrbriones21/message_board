@@ -104,6 +104,6 @@ function disconnectToRoom(room, socket_id) {
     return connectedUsers.get(room);
 }
 
-server.listen(3000, () => {
-    console.log('listening on *:3000');
+server.listen(4000, () => {
+    console.log('listening on *:4000');
 });

@@ -94,9 +94,9 @@
 </div>
 
 
-<script src="http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000/socket.io/socket.io.js"></script>
+<script src="http://<?php echo $_SERVER['SERVER_NAME'] ?>:4000/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-    var socket = io.connect('http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000/private_message'); // connect to socket.io server
+    var socket = io.connect('http://<?php echo $_SERVER['SERVER_NAME'] ?>:4000/private_message'); // connect to socket.io server
     var ids = [<?php echo $user['User']['id'] ?>,<?php echo AuthComponent::user('id') ?>];
     var room = <?php echo json_encode($room) ?>;
 
@@ -153,6 +153,7 @@
                 data: {
                     description: $('#description').val(),
                     recipient_id: '<?php echo $user['User']['id'] ?>',
+                    room: room
                 }
             }).done(function(data){
                 $('#description').val('').focus().autoHeight();
@@ -173,6 +174,7 @@
             console.log(data);
             var list_user_con = '';
             $.map(data,function(user){
+                console.log(user.Message.Message);
                 list_user_con += `
                     <li>
                         <table>
@@ -186,8 +188,7 @@
                                     <br>
                                     <p>${user.User.email}</p>
                                     <br>
-                                    <span style="color: gray;">${user.Message.message_id} ${user.Message.id} ${truncate_with_ellipsis(user.Message.description,30)}</span>
-                                    <span></span>
+                                    <span style="color: gray;">${user.Message.id} ${truncate_with_ellipsis(user.Message.description,30)}</span>
                                 </a>
                             </td>
                             </tr>

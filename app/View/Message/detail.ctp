@@ -183,10 +183,10 @@ function time_elapsed_string($datetime, $full = false) {
 }
 ?>
 
-<script src="http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000/socket.io/socket.io.js"></script>
+<script src="http://<?php echo $_SERVER['SERVER_NAME'] ?>:4000/socket.io/socket.io.js"></script>
 <script>
     
-	var socket = io.connect('http://<?php echo $_SERVER['SERVER_NAME'] ?>:3000'); // connect to socket.io server
+	var socket = io.connect('http://<?php echo $_SERVER['SERVER_NAME'] ?>:4000'); // connect to socket.io server
     var room = <?php echo json_encode(hash('sha1',$message['Message']['id'])) ?>;
     var user = <?php echo json_encode(AuthComponent::user()) ?>;
     user.profile_pic_path = <?php echo json_encode($user['Profile']['profile_pic_path']) ?>

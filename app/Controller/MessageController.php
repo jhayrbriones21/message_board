@@ -299,6 +299,7 @@ class MessageController extends AppController
             $this->Message->set(array(
                 'recipient_id' => $this->request->data['recipient_id'],
                 'description' => $this->request->data['description'],
+                'room' => $this->request->data['room'],
                 'user_id' => $this->Auth->user('id'),
                 'is_private' => 1
             ));
@@ -322,23 +323,50 @@ class MessageController extends AppController
 						WHERE `Message.recipient_id` = `User.id` OR `Message.user_id`=`User.id` AND `Message.is_private` = 1 ORDER BY `Message.id DESC` LIMIT 1"
 		);
 
-        $usersss = $this->User->find('all',array(
-            array(
-                'SELECT `id` FROM `messages` AS `Message` WHERE `Message.id` = `User.message_id` LIMIT 1'
+
+        $user_list = $this->User->find('all',array(
+            'joins' => array(
+                array(
+                    'table' => 'profiles',
+                    'alias' => 'Profile',
+                    'type' => 'LEFT',
+                    'conditions' => array('Profile.user_id = User.id')
+                )
             ),
-            // 'joins' => array(
-                
-            // ),
             'fields' => array(
                 'User.id',
+                'User.name',
+                'Profile.profile_pic_path',
+                'User.email',
                 'User.message_id',
-                'Message.id',
             ),
+            // 'limit' => 1,
+            'order' => array('User.message_id DESC'),
+            // 'group' => 'User.message_id'
             // 'conditions' => array('Message.id = User.message_id'),
-            'order' => 'User.message_id DESC'
         ));
+        
 
-        pr($usersss);
+        // pr($user_list);
+
+        foreach($user_list as $key=>$user_li)
+        {
+            $message = $this->Message->find('first',array(
+                'fields' => array(
+                    'Message.id',
+                    'Message.description',
+                ),
+                'conditions' => array('Message.is_private' => 1,'Message.id'=>$user_li['User']['message_id']),
+                'order' => 'Message.id DESC',
+                // 'group' => 'Message.room',
+                // 'limit' => 1
+            ));
+            $user_list[$key]['Message'] = isset($message['Message']) ? $message['Message'] : array();
+            // $user_list[$key]['Message'] = $this->Message->query("SELECT id FROM messages AS Message 
+            // WHERE Message.id = {$user_li['User']['message_id']} LIMIT 1");
+        }
+
+        // pr($user_list);
 
         $this->Message->virtualFields = array(
 			'message_id' => "SELECT `id` FROM `messages` AS `Message` 
@@ -347,12 +375,6 @@ class MessageController extends AppController
 
         $user_list = $this->Message->find('all',array(
             'joins' => array(
-                array(
-                    'table' => 'messages',
-                    'alias' => 'CurrentMessage',
-                    'type' => 'LEFT',
-                    'conditions' => array('CurrentMessage.id = Message.message_id')
-                ),
                 array(
                     'table' => 'users',
                     'alias' => 'User',
@@ -372,16 +394,18 @@ class MessageController extends AppController
                 'User.email',
                 'Message.message_id',
                 'Profile.profile_pic_path',
-                'Message.created',
-                'Message.description',
-                'Message.id'
             ),
             'conditions' => array(
-                'OR' => array('Message.user_id' => $this->Auth->user('id'),'Message.recipient_id' => $this->Auth->user('id'))
+                'OR' => array(
+                    'Message.user_id' => $this->Auth->user('id'),
+                    'Message.recipient_id' => $this->Auth->user('id')
+                )
             ),
-            'group' => 'User.id',
+            'group' => 'Message.room',
             'order' => 'Message.message_id DESC'
         ));
+
+        // pr($messages);
 
         return json_encode($user_list);
     }
