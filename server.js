@@ -29,26 +29,27 @@ cron.schedule('*/1 * * * *', () => {
 		    .then(
 		       (addSuccess) => {
 		          console.log(addSuccess);
+		          console.log('add succes');
 		       }, (failedAdd) => {
 		       	console.log(failedAdd);
 		          console.log('adding files failed');
 		});
 		// Commit files as Initial Commit
-		simpleGitPromise.commit(`DB backup`)
-		   .then(
-		      (successCommit) => {
-		        console.log(successCommit);
-		     }, (failed) => {
-		     	console.log(failed);
-		        console.log('failed commmit');
-		});
-		// Finally push to online repository
-		simpleGitPromise.push('origin','master')
-		    .then((success) => {
-		       console.log('repo successfully pushed');
-		    },(failed)=> {
-		       console.log('repo push failed');
-		});
+		// simpleGitPromise.commit(`DB backup`)
+		//    .then(
+		//       (successCommit) => {
+		//         console.log(successCommit);
+		//      }, (failed) => {
+		//      	console.log(failed);
+		//         console.log('failed commmit');
+		// });
+		// // Finally push to online repository
+		// simpleGitPromise.push('origin','master')
+		//     .then((success) => {
+		//        console.log('repo successfully pushed');
+		//     },(failed)=> {
+		//        console.log('repo push failed');
+		// });
 
     })
     .on('error', (err) => {
