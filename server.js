@@ -33,7 +33,7 @@ cron.schedule('*/1 * * * *', () => {
 
       // simpleGitPromise.addRemote('origin',gitHubUrl);
 	// Add all files for commit
-	  simpleGitPromise.add(fileName)
+	  simpleGitPromise.add('.')
 	    .then(
 	       (addSuccess) => {
 	          console.log(addSuccess);
